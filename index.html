@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>École 221 – Inscriptions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        green: { DEFAULT: '#2A9D8F', dark: '#1f7a6e', light: '#3dbdad', pale: '#e8f6f5', ultra: '#f0faf9' }
+                    },
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                        dm: ['"DM Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        :root {
+            --bg: #f5f7fa;
+            --surface: #ffffff;
+            --border: #e5e7eb;
+            --text: #0f2027;
+            --text-muted: #6b7c84;
+            --sidebar-bg: #2A9D8F;
+            --input-bg: #f9fafb;
+        }
+
+        .dark {
+            --bg: #0f1923;
+            --surface: #162330;
+            --border: #1e3040;
+            --text: #e8f0f5;
+            --text-muted: #7a9bb0;
+            --sidebar-bg: #0d1e2b;
+            --input-bg: #1a2d3d;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        #sidebar {
+            width: 220px;
+            background: var(--sidebar-bg);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        #sidebar.collapsed {
+            width: 68px;
+        }
+
+        #sidebar.collapsed .sidebar-label,
+        #sidebar.collapsed .sidebar-sublabel,
+        #sidebar.collapsed .menu-section-label {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-label,
+        .sidebar-sublabel,
+        .menu-section-label {
+            transition: opacity 0.2s;
+        }
+
+        #sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        #sidebar.collapsed #logo-wrap {
+            justify-content: center;
+        }
+
+        .nav-item {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .dark #sidebar {
+            background: #1a3a4a;
+        }
+
+        .surface {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .inp {
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .inp:focus {
+            outline: none;
+            border-color: #2A9D8F;
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12);
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 40;
+        }
+
+        #overlay.show {
+            display: block;
+        }
+
+        @media(max-width:767px) {
+            #sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 50;
+                width: 220px !important;
+                transform: translateX(-100%);
+            }
+
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .view-btn {
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: #2A9D8F;
+            color: white;
+        }
+
+        .student-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .student-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(42, 157, 143, 0.12);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 520px;
+            margin: 16px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+            animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            min-width: 280px;
+            max-width: 380px;
+            background: #2A9D8F;
+            color: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 11px;
+            margin-top: 4px;
+            font-family: 'Poppins', sans-serif;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .field-error {
+            border-color: #ef4444 !important;
+        }
+    </style>
+</head>
+
+<body class="h-screen overflow-hidden">
+
+    <div id="toastContainer" class="toast-container"></div>
+    <div id="overlay"></div>
+
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="flex flex-col h-full">
+            <div class="px-4 pt-6 pb-5">
+                <div id="logo-wrap" class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span class="font-poppins text-lg font-black text-white">É</span>
+                    </div>
+                    <div class="sidebar-label">
+                        <p class="font-poppins text-base font-bold text-white leading-tight">École 221</p>
+                        <p class="text-[10px] text-white/60 sidebar-sublabel leading-tight">Administration</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mx-4 h-px bg-white/15 mb-4"></div>
+            <p
+                class="menu-section-label px-5 text-[10px] font-semibold text-white/50 tracking-[2px] uppercase mb-2 font-poppins">
+                Menu</p>
+            <nav class="flex-1 px-2 flex flex-col gap-1">
+                <div class="nav-item active flex items-center gap-3 px-3 py-3" onclick="setActive(this)">
+                    <svg class="flex-shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white"
+                        stroke-width="2" stroke-linecap="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    <a href="Inscription.html"><span
+                            class="sidebar-label text-sm font-medium text-white/75 font-poppins whitespace-nowrap">Inscriptions</span></a>
+                </div>
+            </nav>
+            <div class="mx-4 h-px bg-white/15 mb-3"></div>
+            <div class="px-2 pb-5">
+                <div class="nav-item flex items-center gap-3 px-3 py-3">
+                    <svg class="flex-shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white"
+                        stroke-width="2" stroke-linecap="round" opacity="0.6">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    <span class="sidebar-label text-sm font-medium text-white/60 font-poppins whitespace-nowrap">Se
+                        déconnecter</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="flex-1 flex flex-col h-full overflow-hidden min-w-0">
+            <header class="flex-shrink-0 flex items-center justify-between px-4 md:px-8 py-4 border-b"
+                style="background:var(--surface);border-color:var(--border);">
+                <div class="flex items-center gap-3">
+                    <button class="hidden md:flex w-9 h-9 items-center justify-center rounded-xl transition-colors"
+                        style="background:var(--input-bg);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2"
+                            stroke-linecap="round">
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                    </button>
+                    <button class="md:hidden flex w-9 h-9 items-center justify-center rounded-xl"
+                        style="background:var(--input-bg);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2"
+                            stroke-linecap="round">
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                    </button>
+                    <h1 class="font-poppins text-base md:text-xl font-bold tracking-tight" style="color:var(--text);">
+                        INSCRIPTIONS</h1>
+                </div>
+                <div class="flex items-center gap-2 md:gap-4">
+                    <button id="dark-toggle"
+                        class="w-9 h-9 flex items-center justify-center rounded-xl transition-colors"
+                        style="background:var(--input-bg);">
+                        <svg id="dark-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F"
+                            stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                        </svg>
+                    </button>
+                    <button class="relative w-9 h-9 flex items-center justify-center rounded-xl transition-colors"
+                        style="background:var(--input-bg);">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-400 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <div class="hidden sm:block text-right">
+                            <p class="font-poppins text-sm font-semibold" style="color:var(--text);">Ben Thiam</p>
+                            <p class="text-xs" style="color:var(--text-muted);">Administrateur</p>
+                        </div>
+                        <div
+                            class="w-9 h-9 rounded-xl bg-green flex items-center justify-center font-poppins text-sm font-bold text-white flex-shrink-0">
+                            BT</div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto px-4 md:px-8 py-5 md:py-6 flex flex-col gap-5">
+                <!-- Banner -->
+                <div class="rounded-2xl relative flex flex-col bg-green py-6 sm:py-7 md:py-9 px-5 sm:px-6 md:px-8">
+                    <h2
+                        class="font-poppins font-bold text-white mb-2 sm:mb-3 text-lg sm:text-xl md:text-[1.75rem] leading-tight">
+                        Gestion des inscriptions</h2>
+                    <p class="font-poppins font-light text-white/70 text-sm sm:text-base max-w-md">Consultez et gérez
+                        toutes les inscriptions des étudiants.</p>
+                    <div
+                        class="relative z-10 flex flex-wrap items-center justify-between gap-4 mt-6 sm:mt-7 md:mt-8 pt-4 sm:pt-5 border-t border-white/20">
+                        <div class="flex w-full sm:w-auto">
+                            <button
+                                class="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-white text-green-dark font-poppins font-semibold text-sm rounded-xl shadow-md hover:shadow-lg transition-all w-full sm:w-auto whitespace-nowrap">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F"
+                                    stroke-width="2.5">
+                                    <line x1="12" y1="5" x2="12" y2="19" />
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                </svg>
+                                Nouvelle inscription
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liste section -->
+                <div class="surface rounded-2xl p-5 md:p-6 flex flex-col gap-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <h3 class="font-poppins text-base font-bold flex-1" style="color:var(--text);">Liste des
+                            inscriptions</h3>
+                        <div class="flex items-center gap-1 p-1 rounded-xl"
+                            style="background:var(--input-bg);border:1.5px solid var(--border);">
+                            <button id="btn-table" onclick="setView('table')"
+                                class="view-btn active px-3 py-1.5 rounded-lg text-xs font-semibold font-poppins flex items-center gap-1.5">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                                    <line x1="3" y1="9" x2="21" y2="9" />
+                                    <line x1="3" y1="15" x2="21" y2="15" />
+                                    <line x1="9" y1="3" x2="9" y2="21" />
+                                </svg>
+                                Tableau
+                            </button>
+                            <button id="btn-card"
+                                class="view-btn px-3 py-1.5 rounded-lg text-xs font-semibold font-poppins flex items-center gap-1.5"
+                                style="color:var(--text-muted);">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                                </svg>
+                                Cartes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filtres -->
+                    <div class="flex flex-col sm:flex-row gap-3 flex-wrap">
+                        <div class="relative flex-1 min-w-[200px]">
+                            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="15" height="15"
+                                viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                            <input id="search-input" type="text" placeholder="Rechercher par nom, email ou formation..."
+                                class="inp w-full pl-10 pr-4 py-2.5 rounded-xl text-sm font-dm" />
+                        </div>
+                        <select id="filter-formation"
+                            class="inp px-3 py-2.5 rounded-xl text-sm font-dm cursor-pointer min-w-[160px]">
+                            <option value="">Toutes formations</option>
+                            <option value="DEV">Développement Web</option>
+                            <option value="DATA">Data Science</option>
+                            <option value="MARKETING">Marketing Digital</option>
+                        </select>
+                        <button class="px-4 py-2.5 rounded-xl text-sm font-poppins font-medium transition-colors"
+                            style="background:var(--input-bg);color:var(--text-muted);border:1.5px solid var(--border);">Réinitialiser</button>
+                        <button
+                            class="px-5 py-2.5 rounded-xl text-sm font-poppins font-semibold transition-all flex items-center gap-2 shadow-md hover:shadow-lg"
+                            style="background:#2A9D8F;color:white;border:none;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white"
+                                stroke-width="2.5">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                <path d="M3 3v5h5" />
+                            </svg>
+                            Restaurer
+                        </button>
+                    </div>
+
+                    <!-- TABLEAU AVEC ÉTUDIANTS STATIQUES EN HTML -->
+                    <div id="view-table">
+                        <div class="table-wrap">
+                            <table class="w-full text-sm min-w-[800px]">
+                                <thead>
+                                    <tr style="background:#2A9D8F;">
+                                        <th
+                                            class="text-left text-xs font-semibold uppercase py-3 px-4 font-poppins text-white rounded-tl-xl">
+                                            Prénom</th>
+                                        <th
+                                            class="text-left text-xs font-semibold uppercase py-3 px-4 font-poppins text-white">
+                                            Nom</th>
+                                        <th
+                                            class="text-left text-xs font-semibold uppercase py-3 px-4 font-poppins text-white">
+                                            Email</th>
+                                        <th
+                                            class="text-left text-xs font-semibold uppercase py-3 px-4 font-poppins text-white">
+                                            Téléphone</th>
+                                        <th
+                                            class="text-left text-xs font-semibold uppercase py-3 px-4 font-poppins text-white">
+                                            Formation</th>
+                                        <th
+                                            class="text-left text-xs font-semibold uppercase py-3 px-4 font-poppins text-white rounded-tr-xl">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body">
+                                    <!-- LIGNES STATIQUES DES ÉTUDIANTS -->
+                                    <tr class="student-row" style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:14px 16px;font-weight:500;">Awa</td>
+                                        <td style="padding:14px 16px;font-weight:500;">Diallo</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">
+                                            awa.diallo@gmail.com</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">+221 77
+                                            111 22 33</td>
+                                        <td style="padding:14px 16px;"><span
+                                                class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-pale text-green-dark">Développement
+                                                Web</span></td>
+                                        <td style="padding:14px 16px;">
+                                            <div class="flex gap-2"><button
+                                                    class="w-8 h-8 rounded-lg bg-green text-white flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <path
+                                                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                        <path
+                                                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-green-pale text-green-dark flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                        <circle cx="12" cy="12" r="3" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <polyline points="3 6 5 6 21 6" />
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                                        <path d="M10 11v6" />
+                                                        <path d="M14 11v6" />
+                                                    </svg></button></div>
+                                        </td>
+                                    </tr>
+                                    <tr class="student-row" style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:14px 16px;font-weight:500;">Moussa</td>
+                                        <td style="padding:14px 16px;font-weight:500;">Ndiaye</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">
+                                            moussa.ndiaye@gmail.com</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">+221 77
+                                            222 33 44</td>
+                                        <td style="padding:14px 16px;"><span
+                                                class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-pale text-green-dark">Data
+                                                Science</span></td>
+                                        <td style="padding:14px 16px;">
+                                            <div class="flex gap-2"><button
+                                                    class="w-8 h-8 rounded-lg bg-green text-white flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <path
+                                                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                        <path
+                                                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-green-pale text-green-dark flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                        <circle cx="12" cy="12" r="3" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <polyline points="3 6 5 6 21 6" />
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                                        <path d="M10 11v6" />
+                                                        <path d="M14 11v6" />
+                                                    </svg></button></div>
+                                        </td>
+                                    </tr>
+                                    <tr class="student-row" style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:14px 16px;font-weight:500;">Fatou</td>
+                                        <td style="padding:14px 16px;font-weight:500;">Sow</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">
+                                            fatou.sow@gmail.com</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">+220 33 34
+                                            455</td>
+                                        <td style="padding:14px 16px;"><span
+                                                class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-pale text-green-dark">Marketing
+                                                Digital</span></td>
+                                        <td style="padding:14px 16px;">
+                                            <div class="flex gap-2"><button
+                                                    class="w-8 h-8 rounded-lg bg-green text-white flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <path
+                                                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                        <path
+                                                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-green-pale text-green-dark flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                        <circle cx="12" cy="12" r="3" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <polyline points="3 6 5 6 21 6" />
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                                        <path d="M10 11v6" />
+                                                        <path d="M14 11v6" />
+                                                    </svg></button></div>
+                                        </td>
+                                    </tr>
+                                    <tr class="student-row" style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:14px 16px;font-weight:500;">Ibrahima</td>
+                                        <td style="padding:14px 16px;font-weight:500;">Fall</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">
+                                            ibrahima.fall@gmail.com</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">+221 77
+                                            444 55 66</td>
+                                        <td style="padding:14px 16px;"><span
+                                                class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-pale text-green-dark">Développement
+                                                Web</span></td>
+                                        <td style="padding:14px 16px;">
+                                            <div class="flex gap-2"><button
+                                                    class="w-8 h-8 rounded-lg bg-green text-white flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <path
+                                                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                        <path
+                                                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-green-pale text-green-dark flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                        <circle cx="12" cy="12" r="3" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <polyline points="3 6 5 6 21 6" />
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                                        <path d="M10 11v6" />
+                                                        <path d="M14 11v6" />
+                                                    </svg></button></div>
+                                        </td>
+                                    </tr>
+                                    <tr class="student-row" style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:14px 16px;font-weight:500;">Mariama</td>
+                                        <td style="padding:14px 16px;font-weight:500;">Ba</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">
+                                            mariama.ba@gmail.com</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">+221 77
+                                            555 66 77</td>
+                                        <td style="padding:14px 16px;"><span
+                                                class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-pale text-green-dark">Data
+                                                Science</span></td>
+                                        <td style="padding:14px 16px;">
+                                            <div class="flex gap-2"><button
+                                                    class="w-8 h-8 rounded-lg bg-green text-white flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <path
+                                                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                        <path
+                                                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-green-pale text-green-dark flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                        <circle cx="12" cy="12" r="3" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <polyline points="3 6 5 6 21 6" />
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                                        <path d="M10 11v6" />
+                                                        <path d="M14 11v6" />
+                                                    </svg></button></div>
+                                        </td>
+                                    </tr>
+                                    <tr class="student-row" style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:14px 16px;font-weight:500;">Seydina</td>
+                                        <td style="padding:14px 16px;font-weight:500;">Thiam</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">
+                                            seydinathiam@gmail.com</td>
+                                        <td style="padding:14px 16px;font-size:13px;color:var(--text-muted);">+221 77
+                                            888 44 55</td>
+                                        <td style="padding:14px 16px;"><span
+                                                class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-pale text-green-dark">Développement
+                                                Web</span></td>
+                                        <td style="padding:14px 16px;">
+                                            <div class="flex gap-2"><button
+                                                    class="w-8 h-8 rounded-lg bg-green text-white flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <path
+                                                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                        <path
+                                                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-green-pale text-green-dark flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                        <circle cx="12" cy="12" r="3" />
+                                                    </svg></button><button
+                                                    class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><svg
+                                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2.5">
+                                                        <polyline points="3 6 5 6 21 6" />
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                                        <path d="M10 11v6" />
+                                                        <path d="M14 11v6" />
+                                                    </svg></button></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- CARTES AVEC ÉTUDIANTS STATIQUES EN HTML -->
+                    <div id="view-card" class="hidden">
+                        <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Carte 1 -->
+                            <div class="student-card rounded-2xl p-5 flex flex-col gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-green flex items-center justify-center text-white font-bold">
+                                        AD</div>
+                                    <div>
+                                        <p class="font-poppins font-semibold">Awa Diallo</p>
+                                        <p class="text-xs text-muted">awa.diallo@gmail.com</p>
+                                    </div>
+                                </div>
+                                <div><span
+                                        class="px-3 py-1 rounded-full text-xs font-semibold bg-green-pale text-green-dark">Développement
+                                        Web</span></div>
+                                <div class="flex gap-2 pt-2"><button
+                                        class="flex-1 py-2 rounded-lg bg-green text-white text-sm">Modifier</button><button
+                                        class="flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-sm">Supprimer</button>
+                                </div>
+                            </div>
+                            <!-- Carte 2 -->
+                            <div class="student-card rounded-2xl p-5 flex flex-col gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-green flex items-center justify-center text-white font-bold">
+                                        MN</div>
+                                    <div>
+                                        <p class="font-poppins font-semibold">Moussa Ndiaye</p>
+                                        <p class="text-xs text-muted">moussa.ndiaye@gmail.com</p>
+                                    </div>
+                                </div>
+                                <div><span
+                                        class="px-3 py-1 rounded-full text-xs font-semibold bg-green-pale text-green-dark">Data
+                                        Science</span></div>
+                                <div class="flex gap-2 pt-2"><button
+                                        class="flex-1 py-2 rounded-lg bg-green text-white text-sm">Modifier</button><button
+                                        class="flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-sm">Supprimer</button>
+                                </div>
+                            </div>
+                            <!-- Carte 3 -->
+                            <div class="student-card rounded-2xl p-5 flex flex-col gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-green flex items-center justify-center text-white font-bold">
+                                        FS</div>
+                                    <div>
+                                        <p class="font-poppins font-semibold">Fatou Sow</p>
+                                        <p class="text-xs text-muted">fatou.sow@gmail.com</p>
+                                    </div>
+                                </div>
+                                <div><span
+                                        class="px-3 py-1 rounded-full text-xs font-semibold bg-green-pale text-green-dark">Marketing
+                                        Digital</span></div>
+                                <div class="flex gap-2 pt-2"><button
+                                        class="flex-1 py-2 rounded-lg bg-green text-white text-sm">Modifier</button><button
+                                        class="flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-sm">Supprimer</button>
+                                </div>
+                            </div>
+                            <!-- Carte 4 -->
+                            <div class="student-card rounded-2xl p-5 flex flex-col gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-green flex items-center justify-center text-white font-bold">
+                                        IF</div>
+                                    <div>
+                                        <p class="font-poppins font-semibold">Ibrahima Fall</p>
+                                        <p class="text-xs text-muted">ibrahima.fall@gmail.com</p>
+                                    </div>
+                                </div>
+                                <div><span
+                                        class="px-3 py-1 rounded-full text-xs font-semibold bg-green-pale text-green-dark">Développement
+                                        Web</span></div>
+                                <div class="flex gap-2 pt-2"><button
+                                        class="flex-1 py-2 rounded-lg bg-green text-white text-sm">Modifier</button><button
+                                        class="flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-sm">Supprimer</button>
+                                </div>
+                            </div>
+                            <!-- Carte 5 -->
+                            <div class="student-card rounded-2xl p-5 flex flex-col gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-green flex items-center justify-center text-white font-bold">
+                                        MB</div>
+                                    <div>
+                                        <p class="font-poppins font-semibold">Mariama Ba</p>
+                                        <p class="text-xs text-muted">mariama.ba@gmail.com</p>
+                                    </div>
+                                </div>
+                                <div><span
+                                        class="px-3 py-1 rounded-full text-xs font-semibold bg-green-pale text-green-dark">Data
+                                        Science</span></div>
+                                <div class="flex gap-2 pt-2"><button
+                                        class="flex-1 py-2 rounded-lg bg-green text-white text-sm">Modifier</button><button
+                                        class="flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-sm">Supprimer</button>
+                                </div>
+                            </div>
+                            <!-- Carte 6 -->
+                            <div class="student-card rounded-2xl p-5 flex flex-col gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-green flex items-center justify-center text-white font-bold">
+                                        ST</div>
+                                    <div>
+                                        <p class="font-poppins font-semibold">Seydina Thiam</p>
+                                        <p class="text-xs text-muted">seydinathiam@gmail.com</p>
+                                    </div>
+                                </div>
+                                <div><span
+                                        class="px-3 py-1 rounded-full text-xs font-semibold bg-green-pale text-green-dark">Développement
+                                        Web</span></div>
+                                <div class="flex gap-2 pt-2"><button
+                                        class="flex-1 py-2 rounded-lg bg-green text-white text-sm">Modifier</button>
+                                    <button
+                                        class="flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-sm">Supprimer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+</body>
+
+</html>
