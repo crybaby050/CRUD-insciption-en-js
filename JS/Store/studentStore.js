@@ -24,16 +24,16 @@ export function normalizeEtudiant(etudiant) {
         formation: etudiant.formation,
         statut: Boolean(etudiant.statut),
         createdAt: etudiant.createdAt ? new Date(etudiant.createdAt) : new Date(),
+        dateAjout: formatTaskDate(etudiant.createdAt || new Date())
     };
 }
 
 export function getEtudiants() {
-    // Ne retourner que les étudiants avec statut = true
     return etudiants.filter(e => e.statut === true);
 }
 
 export function ajouterUnEtudiantStore(etudiant) {
-    etudiants.push(normalizeEtudiant(etudiant)); // Correction: normalizeEtudiant au lieu de normaliserEtudiant
+    etudiants.push(normalizeEtudiant(etudiant));
     sauvegarderLesEtudiants();
 }
 
