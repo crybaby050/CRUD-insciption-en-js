@@ -26,3 +26,4 @@ export const inpTelephone = document.getElementById("inp-telephone");
 export const btnFermerModal = document.getElementById("btn-fermer-modal");
 export const inpFormation = document.getElementById("inp-formation");
 export const inpAdresse = document.getElementById("inp-adresse"); 
+export const inpPays = document.getElementById("inp-pays");
