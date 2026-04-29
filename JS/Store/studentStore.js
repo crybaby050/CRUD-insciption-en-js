@@ -1,20 +1,16 @@
 const STORAGE_KEY = "etudiants";
 
-// Charger les étudiants depuis le navigateur au démarrage
 let etudiants = chargerLesEtudiants();
 
-// Lit les étudiants sauvegardés dans le navigateur
 export function chargerLesEtudiants() {
     const contenu = localStorage.getItem(STORAGE_KEY);
     return contenu ? JSON.parse(contenu) : [];
 }
 
-// Sauvegarde la liste des étudiants dans le navigateur
 export function sauvegarderLesEtudiants() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(etudiants));
 }
 
-// S'assure qu'un étudiant a toujours le bon format
 export function normalizeEtudiant(etudiant) {
     return {
         id: etudiant.id,
@@ -29,26 +25,23 @@ export function normalizeEtudiant(etudiant) {
     };
 }
 
-// Retourne tous les étudiants
 export function getEtudiants() {
-    return etudiants;
+    // Ne retourner que les étudiants avec statut = true
+    return etudiants.filter(e => e.statut === true);
 }
 
-// Ajoute un étudiant à la liste
-export function ajouterUnEtudiant(etudiant) {
-    etudiants.push(normaliserEtudiant(etudiant));
+export function ajouterUnEtudiantStore(etudiant) {
+    etudiants.push(normalizeEtudiant(etudiant)); // Correction: normalizeEtudiant au lieu de normaliserEtudiant
     sauvegarderLesEtudiants();
 }
 
-// Modifie les informations d'un étudiant
 export function modifierUnEtudiant(id, modifications) {
     etudiants = etudiants.map(e =>
-        e.id === id ? normaliserEtudiant({ ...e, ...modifications }) : e
+        e.id === id ? normalizeEtudiant({ ...e, ...modifications }) : e
     );
     sauvegarderLesEtudiants();
 }
 
-// Désactive un étudiant en mettant son statut à false
 export function desactiverUnEtudiant(id) {
     etudiants = etudiants.map(e =>
         e.id === id ? { ...e, statut: false } : e
@@ -56,7 +49,6 @@ export function desactiverUnEtudiant(id) {
     sauvegarderLesEtudiants();
 }
 
-// Supprime tous les étudiants
 export function toutEffacer() {
     etudiants = [];
     sauvegarderLesEtudiants();
