@@ -1,4 +1,3 @@
-// service.js - CORRIGÉ
 import {
     ajouterUnEtudiantStore, // Correction: même nom que dans studentStore.js
     normalizeEtudiant,
