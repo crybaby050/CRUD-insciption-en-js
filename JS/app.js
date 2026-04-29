@@ -1,7 +1,7 @@
 // app.js - CORRIGÉ
 import { addEtudiant } from "./Services/service.js";
 import { getEtudiants } from "./Store/studentStore.js";
-import { renderEtudiantList } from "./UI/etudiantRenderer.js";
+import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
 import {
     addModal,
     addForm,
@@ -12,9 +12,16 @@ import {
     inpTelephone,
     btnAjout,
     btnFermerModal,
-    inpFormation, // AJOUTÉ
-    inpAdresse,   // AJOUTÉ
+    inpFormation,
+    inpAdresse,
+    inpPays,       
+    btnVueTableau, 
+    btnVueCartes,  
+    viewTableau,   
+    viewCartes,  
 } from "./DOM/element.js";
+
+let vueActive = "tableau";
 
 function ouvrirModalAjout() {
     console.log("ouvrirModalAjout appelée");
@@ -27,6 +34,7 @@ function ouvrirModalAjout() {
     if (inpTelephone) inpTelephone.value = "";
     if (inpFormation) inpFormation.value = "DEV";
     if (inpAdresse) inpAdresse.value = "";
+    if (inpPays) inpPays.value = "+221";
 
     addModal.classList.add("active");
 }
@@ -40,21 +48,26 @@ function fermerModal() {
 function handleSubmit(event) {
     event.preventDefault();
 
+    const codePays = inpPays?.value || "+221";
+    const numero = inpTelephone?.value.trim() || "";
+    const telephoneComplet = numero ? `${codePays} ${numero}` : "";
+
     const etudiant = {
-        nom: inpNom?.value || "",
-        prenom: inpPrenom?.value || "",
-        email: inpEmail?.value || "",
-        telephone: inpTelephone?.value || "",
-        formation: inpFormation?.value || "DEV",
-        adresse: inpAdresse?.value || "",
+        nom: inpNom?.value.trim() || "",
+        prenom: inpPrenom?.value.trim() || "",
+        email: inpEmail?.value.trim() || "",
+        telephone: telephoneComplet,
+        formation: inpFormation?.value || "",
+        adresse: inpAdresse?.value.trim() || "",
     };
 
     try {
         addEtudiant(etudiant);
         fermerModal();
         refreshUI();
+        afficherToast("Étudiant ajouté avec succès !");
     } catch (error) {
-        alert(error.message);
+        afficherToast(error.message, "error");
         console.error("Erreur lors de l'ajout :", error);
     }
 }
@@ -65,34 +78,79 @@ function refreshUI() {
         onModifier: null,
         onDesactiver: null,
     };
-    renderEtudiantList(etudiants, handlers);
+    
+    if (vueActive === "tableau") {
+        renderEtudiantList(etudiants, handlers);
+        if (viewTableau) viewTableau.style.display = "block";
+        if (viewCartes) viewCartes.style.display = "none";
+        if (btnVueTableau) btnVueTableau.classList.add("active");
+        if (btnVueCartes) btnVueCartes.classList.remove("active");
+    } else {
+        renderEtudiantCarteList(etudiants, handlers);
+        if (viewTableau) viewTableau.style.display = "none";
+        if (viewCartes) viewCartes.style.display = "block";
+        if (btnVueTableau) btnVueTableau.classList.remove("active");
+        if (btnVueCartes) btnVueCartes.classList.add("active");
+    }
 }
 
-if (btnAjout) {
-    btnAjout.addEventListener("click", ouvrirModalAjout);
+function afficherToast(message, type = "success") {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+    
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.style.background = type === "error" ? "#ef4444" : "#2A9D8F";
+    
+    toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            ${type === "error" ? 
+                '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' :
+                '<polyline points="20 6 9 17 4 12"/>'
+            }
+        </svg>
+        <span style="font-size: 14px; flex: 1;">${message}</span>
+        <button class="toast-close" style="background:none;border:none;color:white;cursor:pointer;font-size:18px;padding:0 4px;">×</button>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    const closeBtn = toast.querySelector(".toast-close");
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => toast.remove());
+    }
+    
+    setTimeout(() => {
+        if (toast.parentNode) toast.remove();
+    }, 3000);
 }
 
-if (btnFermerModal) {
-    btnFermerModal.addEventListener("click", fermerModal);
-}
+if (btnAjout) btnAjout.addEventListener("click", ouvrirModalAjout);
+if (btnFermerModal) btnFermerModal.addEventListener("click", fermerModal);
+if (addForm) addForm.addEventListener("submit", handleSubmit);
 
-if (addForm) {
-    addForm.addEventListener("submit", handleSubmit);
-}
-
-// Bouton annuler dans le modal
 const btnAnnuler = document.getElementById("btn-annuler");
-if (btnAnnuler) {
-    btnAnnuler.addEventListener("click", fermerModal);
-}
+if (btnAnnuler) btnAnnuler.addEventListener("click", fermerModal);
 
-// Fermer le modal en cliquant sur l'overlay
 if (addModal) {
     addModal.addEventListener("click", function(e) {
-        if (e.target === addModal) {
-            fermerModal();
-        }
+        if (e.target === addModal) fermerModal();
     });
 }
+
+if (btnVueTableau) {
+    btnVueTableau.addEventListener("click", () => {
+        vueActive = "tableau";
+        refreshUI();
+    });
+}
+
+if (btnVueCartes) {
+    btnVueCartes.addEventListener("click", () => {
+        vueActive = "cartes";
+        refreshUI();
+    });
+}
+
 
 refreshUI();
