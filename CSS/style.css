@@ -192,7 +192,7 @@ body {
         }
 
 
-/* MODAL STYLES */
+/* MODAL STYLES - VERSION SANS SCROLL */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -215,78 +215,72 @@ body {
     border-radius: 24px;
     width: 90%;
     max-width: 500px;
-    /* Hauteur fixe au lieu de max-height */
-    height: 85vh;
-    max-height: 650px;
-    /* Empêcher le scroll sur le conteneur principal */
     overflow: hidden;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     border: 1px solid var(--border);
-    /* Utiliser flexbox pour gérer le layout interne */
-    display: flex;
-    flex-direction: column;
 }
 
-/* Style pour le header du modal (titre + bouton fermer) */
-.modal-box > div:first-child {
-    flex-shrink: 0;
-}
-
-/* Style pour le formulaire */
-#add-form {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
-}
-
-/* Conteneur des champs du formulaire */
+/* Réduire les espacements dans le formulaire */
 #add-form .p-6 {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.5rem;
+    padding: 1rem 1.5rem !important;
 }
 
-/* Style de la scrollbar pour le conteneur des champs */
-#add-form .p-6::-webkit-scrollbar {
-    width: 6px;
+#add-form .flex.flex-col.gap-4 {
+    gap: 0.75rem !important;
 }
 
-#add-form .p-6::-webkit-scrollbar-track {
-    background: transparent;
+/* Réduire la taille des inputs */
+#add-form .inp {
+    padding-top: 0.625rem !important;
+    padding-bottom: 0.625rem !important;
 }
 
-#add-form .p-6::-webkit-scrollbar-thumb {
-    background: #2A9D8F;
-    border-radius: 3px;
+/* Réduire l'espace des labels */
+#add-form label {
+    margin-bottom: 0.25rem !important;
+    font-size: 0.7rem !important;
 }
 
-#add-form .p-6::-webkit-scrollbar-thumb:hover {
-    background: #1f7a6e;
-}
-
-/* Footer du formulaire (boutons) - reste fixe en bas */
+/* Réduire le padding du footer */
 #add-form .px-6.pb-6 {
-    flex-shrink: 0;
-    padding: 1rem 1.5rem 1.5rem 1.5rem;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
+    padding: 0.75rem 1.5rem 1rem 1.5rem !important;
+}
+
+/* Réduire la taille des boutons */
+#add-form button[type="submit"],
+#add-form #btn-annuler {
+    padding-top: 0.625rem !important;
+    padding-bottom: 0.625rem !important;
 }
 
 /* Pour les petits écrans */
 @media (max-width: 640px) {
     .modal-box {
         width: 95%;
-        height: 90vh;
-        max-height: none;
         border-radius: 20px;
     }
 }
 
-/* Pour les très petits écrans */
-@media (max-height: 700px) {
-    .modal-box {
-        height: 95vh;
-        max-height: none;
+/* Pour les très petits écrans en hauteur */
+@media (max-height: 650px) {
+    #add-form .p-6 {
+        padding: 0.5rem 1rem !important;
+    }
+    
+    #add-form .flex.flex-col.gap-4 {
+        gap: 0.5rem !important;
+    }
+    
+    #add-form .inp {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    
+    .modal-box > div:first-child {
+        padding: 0.75rem 1rem !important;
+    }
+    
+    #add-form .px-6.pb-6 {
+        padding: 0.5rem 1rem 0.75rem 1rem !important;
     }
 }
