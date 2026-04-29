@@ -261,6 +261,9 @@
                                             Téléphone</th>
                                         <th
                                             class="text-left text-xs font-semibold uppercase py-3 px-4 font-poppins text-white">
+                                            Date d'ajout</th>
+                                        <th
+                                            class="text-left text-xs font-semibold uppercase py-3 px-4 font-poppins text-white">
                                             Formation</th>
                                         <th
                                             class="text-left text-xs font-semibold uppercase py-3 px-4 font-poppins text-white rounded-tr-xl">
@@ -275,8 +278,10 @@
                     </div>
 
                     <!-- VUE CARTES — les cartes sont injectées dynamiquement en JS -->
-                    <div id="view-cartes" class="hidden">
+                    <div id="view-cartes">
+                        <div id="card-grid">
 
+                        </div>
                     </div>
 
                     <!-- Pagination -->
@@ -284,6 +289,177 @@
 
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- MODAL D'AJOUT OU DE MODIFICATION -->
+    <div id="add-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="flex items-center justify-between px-6 pt-6 pb-4"
+                style="border-bottom:1px solid var(--border);">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-green flex items-center justify-center">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    </div>
+                    <h3 id="modal-titre" class="font-poppins text-lg font-bold" style="color:var(--text);">Nouvel
+                        étudiant</h3>
+                </div>
+                <button id="btn-fermer-modal"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
+                    style="background:var(--input-bg);color:var(--text-muted);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="add-form" novalidate>
+                <div class="p-6 flex flex-col gap-4">
+                    <!-- NOM -->
+                    <div>
+                        <label class="block text-xs font-semibold font-poppins mb-1.5"
+                            style="color:var(--text-muted);">NOM</label>
+                        <div class="relative">
+                            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="15" height="15"
+                                viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <input id="inp-nom" type="text" placeholder="Ex : Thiam"
+                                class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
+                        </div>
+                    </div>
+
+                    <!-- PRENOM -->
+                    <div>
+                        <label class="block text-xs font-semibold font-poppins mb-1.5"
+                            style="color:var(--text-muted);">PRENOM</label>
+                        <div class="relative">
+                            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="15" height="15"
+                                viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <input id="inp-prenom" type="text" placeholder="Ex : Seydina"
+                                class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
+                        </div>
+                    </div>
+
+                    <!-- EMAIL -->
+                    <div>
+                        <label class="block text-xs font-semibold font-poppins mb-1.5"
+                            style="color:var(--text-muted);">EMAIL</label>
+                        <div class="relative">
+                            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="15" height="15"
+                                viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <input id="inp-email" type="email" placeholder="Ex : email@gmail.com"
+                                class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
+                        </div>
+                    </div>
+
+                    <!-- TELEPHONE -->
+                    <div>
+                        <label class="block text-xs font-semibold font-poppins mb-1.5"
+                            style="color:var(--text-muted);">TELEPHONE</label>
+                        <div class="flex gap-2">
+                            <!-- Sélecteur de pays -->
+                            <div class="relative" style="width: 130px; flex-shrink: 0;">
+                                <select id="inp-pays"
+                                    class="inp w-full pl-3 pr-8 py-3 rounded-xl text-sm font-dm cursor-pointer appearance-none">
+                                    <option value="+221">🇸🇳 +221</option>
+                                    <option value="+220">🇬🇲 +220</option>
+                                </select>
+                                <svg class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" width="14"
+                                    height="14" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9" />
+                                </svg>
+                            </div>
+
+                            <!-- Numéro de téléphone -->
+                            <div class="relative flex-1">
+                                <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="15" height="15"
+                                    viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.37 2 2 0 0 1 3.62 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.72a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z" />
+                                </svg>
+                                <input id="inp-telephone" type="tel" placeholder="77 888 44 55"
+                                    class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FORMATION -->
+                    <div>
+                        <label class="block text-xs font-semibold font-poppins mb-1.5"
+                            style="color:var(--text-muted);">FORMATION</label>
+                        <div class="relative">
+                            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="15" height="15"
+                                viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
+                            <select id="inp-formation"
+                                class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm cursor-pointer">
+                                <option value="">Sélectionner une formation</option>
+                                <option value="DEV WEB">Développement Web</option>
+                                <option value="DEV MOBILE">Développement Mobile</option>
+                                <option value="DATA SCIENCE">Data Science</option>
+                                <option value="IA">Intelligence Artificielle</option>
+                                <option value="MARKETING DIGITAL">Marketing Digital</option>
+                                <option value="UX/UI DESIGN">UX/UI Design</option>
+                                <option value="CYBERSECURITE">Cybersécurité</option>
+                                <option value="CLOUD">Cloud Computing</option>
+                                <option value="BLOCKCHAIN">Blockchain</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ADRESSE (NOUVEAU) -->
+                    <div>
+                        <label class="block text-xs font-semibold font-poppins mb-1.5"
+                            style="color:var(--text-muted);">ADRESSE</label>
+                        <div class="relative">
+                            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="15" height="15"
+                                viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            <input id="inp-adresse" type="text" placeholder="Ex : Dakar, Sénégal"
+                                class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 pb-6 flex gap-3">
+                    <button type="submit"
+                        class="flex-1 flex items-center justify-center gap-2 py-3 bg-green text-white font-poppins font-semibold text-sm rounded-xl hover:bg-green-dark transition-colors">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Enregistrer
+                    </button>
+                    <button type="button" id="btn-annuler"
+                        class="flex-1 flex items-center justify-center gap-2 py-3 font-poppins font-semibold text-sm rounded-xl transition-colors"
+                        style="background:var(--input-bg);color:var(--text-muted);border:1.5px solid var(--border);">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                        Annuler
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
