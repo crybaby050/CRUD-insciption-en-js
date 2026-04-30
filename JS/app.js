@@ -239,6 +239,9 @@ if (addForm) addForm.addEventListener("submit", handleSubmit);
 const btnAnnuler = document.getElementById("btn-annuler");
 if (btnAnnuler) btnAnnuler.addEventListener("click", fermerModal);
 
+if (btnConfirmAnnuler) btnConfirmAnnuler.addEventListener("click", fermerModalConfirmation);
+if (btnConfirmOk) btnConfirmOk.addEventListener("click", executerDesactivation);
+
 if (addModal) {
     addModal.addEventListener("click", function (e) {
         if (e.target === addModal) fermerModal();
