@@ -1,19 +1,16 @@
-// JS/UI/drawerRenderer.js
 import { drawerList, drawerCount, btnRestaurerTout, countSelected } from "../DOM/element.js";
 import { getEtudiantsDesactives, restaurerEtudiant, getEtudiantById } from "../Store/studentStore.js";
 
 let selectedIds = new Set();
-
+let idEtudiantARestaurer = null;
 
 export function renderDrawer() {
     const desactives = getEtudiantsDesactives();
     
-    // Mettre à jour le compteur
     if (drawerCount) {
         drawerCount.textContent = `${desactives.length} étudiant(s) désactivé(s)`;
     }
     
-    // Vider la liste
     if (drawerList) {
         drawerList.innerHTML = "";
         
@@ -21,8 +18,9 @@ export function renderDrawer() {
             drawerList.innerHTML = `
                 <div class="text-center py-8" style="color:var(--text-muted);">
                     <svg class="mx-auto mb-3" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
-                        <path d="M3 6h18"/>
-                        <path d="M8 6V4h8v2"/>
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
                     </svg>
                     <p class="text-sm">La corbeille est vide</p>
                 </div>
@@ -34,11 +32,9 @@ export function renderDrawer() {
         }
     }
     
-    // Réinitialiser la sélection
     selectedIds.clear();
     updateRestaurerButton();
 }
-
 
 function createDrawerItem(etudiant) {
     const div = document.createElement("div");
@@ -79,19 +75,60 @@ function createDrawerItem(etudiant) {
         updateRestaurerButton();
     });
     
-    // Événement bouton restaurer
+    // Événement bouton restaurer qui Ouvre le modal de confirmation
     const btnRestaurer = div.querySelector(".btn-restaurer-un");
     btnRestaurer.addEventListener("click", () => {
-        restaurerEtudiant(etudiant.id);
-        selectedIds.delete(etudiant.id);
-        renderDrawer();
-        // Rafraîchir la liste principale
-        if (typeof window.refreshUI === "function") {
-            window.refreshUI();
-        }
+        ouvrirModalRestoration(etudiant);
     });
     
     return div;
+}
+
+function ouvrirModalRestoration(etudiant) {
+    const restoreModal = document.getElementById("restore-modal");
+    const restoreMessage = document.getElementById("restore-message");
+    
+    if (!restoreModal) return;
+    
+    idEtudiantARestaurer = etudiant.id;
+    
+    if (restoreMessage) {
+        restoreMessage.innerHTML = `
+            Êtes-vous sûr de vouloir restaurer <strong>${etudiant.prenom} ${etudiant.nom}</strong> ?<br>
+            <span style="font-size: 12px; opacity: 0.8;">Il sera de nouveau visible dans la liste.</span>
+        `;
+    }
+    
+    restoreModal.classList.add("active");
+}
+
+export function executerRestoration() {
+    if (!idEtudiantARestaurer) return;
+    
+    restaurerEtudiant(idEtudiantARestaurer);
+    fermerModalRestoration();
+    renderDrawer();
+    
+    if (typeof window.refreshUI === "function") {
+        window.refreshUI();
+    }
+    
+    // Notification
+    if (typeof window.afficherToast === "function") {
+        window.afficherToast("Étudiant restauré avec succès !", "success");
+    }
+}
+
+export function fermerModalRestoration() {
+    const restoreModal = document.getElementById("restore-modal");
+    if (restoreModal) {
+        restoreModal.classList.remove("active");
+    }
+    idEtudiantARestaurer = null;
+}
+
+export function getIdEtudiantARestaurer() {
+    return idEtudiantARestaurer;
 }
 
 function updateRestaurerButton() {
@@ -102,14 +139,14 @@ function updateRestaurerButton() {
     }
     
     if (btnRestaurerTout) {
-        btnRestaurerTout.disabled = count < 3;
-        btnRestaurerTout.style.opacity = count < 3 ? "0.5" : "1";
-        btnRestaurerTout.style.cursor = count < 3 ? "not-allowed" : "pointer";
+        btnRestaurerTout.disabled = count < 1;
+        btnRestaurerTout.style.opacity = count < 1 ? "0.5" : "1";
+        btnRestaurerTout.style.cursor = count < 1 ? "not-allowed" : "pointer";
     }
 }
 
 export function restaurerTousSelectionnes() {
-    if (selectedIds.size < 3) return;
+    if (selectedIds.size === 0) return;
     
     selectedIds.forEach(id => {
         restaurerEtudiant(id);
