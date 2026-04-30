@@ -43,3 +43,10 @@ export const btnFermerDrawer = document.getElementById("btn-fermer-drawer");
 export const btnRestaurerTout = document.getElementById("btn-restaurer-tout");
 // export const btnViderCorbeille = document.getElementById("btn-vider-corbeille");
 export const countSelected = document.getElementById("count-selected");
+
+
+export const restoreModal = document.getElementById("restore-modal");
+export const restoreTitre = document.getElementById("restore-titre");
+export const restoreMessage = document.getElementById("restore-message");
+export const btnRestoreAnnuler = document.getElementById("btn-restore-annuler");
+export const btnRestoreOk = document.getElementById("btn-restore-ok");
