@@ -1,4 +1,4 @@
-// app.js - CORRIGÉ
+// app.js
 import { addEtudiant, updateEtudiant } from "./Services/service.js";
 import { getEtudiants, getEtudiantById, desactiverUnEtudiant } from "./Store/studentStore.js";
 import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
@@ -20,28 +20,23 @@ import {
     btnVueCartes,
     viewTableau,
     viewCartes,
-    confirmModal,     
-    confirmTitre,     
-    confirmMessage,   
+    confirmModal,
+    confirmMessage,
     btnConfirmAnnuler,
-    btnConfirmOk,   
+    btnConfirmOk,
 } from "./DOM/element.js";
 
 let vueActive = "tableau";
-
-//On initialise une variable pour quand c'est le bouton modifier qui est selectionner
 let etudiantEnCoursModification = null;
-
-//On initialise une variable pour quand c'est le bouton de suppression qui est selectionner
-let idEtudiantADesactiver = null
+let idEtudiantADesactiver = null;
 
 function ouvrirModalAjout() {
     console.log("ouvrirModalAjout appelée");
     if (!addModal) return;
-
+    
     etudiantEnCoursModification = null;
     modalTitre.textContent = "Nouvel étudiant";
-
+    
     if (inpNom) inpNom.value = "";
     if (inpPrenom) inpPrenom.value = "";
     if (inpEmail) inpEmail.value = "";
@@ -53,27 +48,25 @@ function ouvrirModalAjout() {
     addModal.classList.add("active");
 }
 
-//Ouvrir le modal pour les modifications
 function ouvrirModalModification(id) {
     console.log("ouvrirModalModification appelée pour l'ID:", id);
     if (!addModal) return;
-
+    
     const etudiant = getEtudiantById(id);
     if (!etudiant) {
-        afficherToast("Étudiant introuvable", "error");
+        toastError("Erreur", "Étudiant introuvable");
         return;
     }
-
+    
     etudiantEnCoursModification = id;
     modalTitre.textContent = "Modifier l'étudiant";
-
-
+    
     if (inpNom) inpNom.value = etudiant.nom || "";
     if (inpPrenom) inpPrenom.value = etudiant.prenom || "";
     if (inpEmail) inpEmail.value = etudiant.email || "";
     if (inpAdresse) inpAdresse.value = etudiant.adresse || "";
     if (inpFormation) inpFormation.value = etudiant.formation || "";
-
+    
     if (etudiant.telephone) {
         const parts = etudiant.telephone.split(" ");
         if (parts.length >= 2) {
@@ -98,24 +91,21 @@ function fermerModal() {
     }
 }
 
-// ouvrir le modal de confirmation
 function ouvrirModalConfirmation(id, nom, prenom) {
     if (!confirmModal) return;
     
     idEtudiantADesactiver = id;
     
-    // Personnaliser le message
-    if (confirmTitre) confirmTitre.textContent = "Confirmer la Supression";
     if (confirmMessage) {
         confirmMessage.innerHTML = `
-            Êtes-vous sûr de vouloir supprimer <strong>${prenom} ${nom}</strong> ?<br>
+            Êtes-vous sûr de vouloir désactiver <strong>${prenom} ${nom}</strong> ?<br>
+            <span style="font-size: 12px; opacity: 0.8;">Il ne sera plus visible dans la liste.</span>
         `;
     }
     
     confirmModal.classList.add("active");
 }
 
-//Fermer le modal de confirmation de suppression d'un etudiant
 function fermerModalConfirmation() {
     if (confirmModal) {
         confirmModal.classList.remove("active");
@@ -123,7 +113,6 @@ function fermerModalConfirmation() {
     }
 }
 
-//Fonction qui execute la suppression d'un etudiant
 function executerDesactivation() {
     if (!idEtudiantADesactiver) return;
     
@@ -131,9 +120,9 @@ function executerDesactivation() {
         desactiverUnEtudiant(idEtudiantADesactiver);
         fermerModalConfirmation();
         refreshUI();
-        afficherToast("Étudiant désactivé avec succès");
+        toastSuccess("Succès", "Étudiant désactivé avec succès");
     } catch (error) {
-        afficherToast("Erreur lors de la désactivation", "error");
+        toastError("Erreur", "Erreur lors de la désactivation");
         console.error(error);
     }
 }
@@ -156,18 +145,16 @@ function handleSubmit(event) {
 
     try {
         if (etudiantEnCoursModification) {
-            //Modification
             updateEtudiant(etudiantEnCoursModification, etudiant);
-            afficherToast("Étudiant modifié avec succès !");
+            toastSuccess("Succès", "Étudiant modifié avec succès !");
         } else {
-            //Ajout
             addEtudiant(etudiant);
-            afficherToast("Étudiant ajouté avec succès !");
+            toastSuccess("Succès", "Étudiant ajouté avec succès !");
         }
         fermerModal();
         refreshUI();
     } catch (error) {
-        afficherToast(error.message, "error");
+        toastError("Erreur", error.message);
         console.error("Erreur :", error);
     }
 }
@@ -176,63 +163,50 @@ function refreshUI() {
     const etudiants = getEtudiants();
     const handlers = {
         onModifier: ouvrirModalModification,
-        onDesactiver: gererDesactivation,   
+        onDesactiver: gererDesactivation,
     };
-
+    
     if (vueActive === "tableau") {
         renderEtudiantList(etudiants, handlers);
-        if (viewTableau) viewTableau.style.display = "block";
-        if (viewCartes) viewCartes.style.display = "none";
+        if (viewTableau) {
+            viewTableau.style.display = "block";
+            viewTableau.classList.remove("hidden");
+        }
+        if (viewCartes) {
+            viewCartes.style.display = "none";
+            viewCartes.classList.add("hidden");
+        }
         if (btnVueTableau) btnVueTableau.classList.add("active");
         if (btnVueCartes) btnVueCartes.classList.remove("active");
     } else {
         renderEtudiantCarteList(etudiants, handlers);
-        if (viewTableau) viewTableau.style.display = "none";
-        if (viewCartes) viewCartes.style.display = "block";
+        if (viewTableau) {
+            viewTableau.style.display = "none";
+            viewTableau.classList.add("hidden");
+        }
+        if (viewCartes) {
+            viewCartes.style.display = "block";
+            viewCartes.classList.remove("hidden");
+            const cardGrid = document.getElementById("card-grid");
+            if (cardGrid) {
+                cardGrid.style.display = "grid";
+            }
+        }
         if (btnVueTableau) btnVueTableau.classList.remove("active");
         if (btnVueCartes) btnVueCartes.classList.add("active");
     }
 }
 
-//Desactivation ou suppression d'un etudiant
 function gererDesactivation(id) {
     const etudiant = getEtudiantById(id);
     if (etudiant) {
         ouvrirModalConfirmation(id, etudiant.nom, etudiant.prenom);
+    } else {
+        toastError("Erreur", "Étudiant introuvable");
     }
 }
 
-function afficherToast(message, type = "success") {
-    const toastContainer = document.getElementById("toast-container");
-    if (!toastContainer) return;
-
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.style.background = type === "error" ? "#ef4444" : "#2A9D8F";
-
-    toast.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            ${type === "error" ?
-            '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' :
-            '<polyline points="20 6 9 17 4 12"/>'
-        }
-        </svg>
-        <span style="font-size: 14px; flex: 1;">${message}</span>
-        <button class="toast-close" style="background:none;border:none;color:white;cursor:pointer;font-size:18px;padding:0 4px;">×</button>
-    `;
-
-    toastContainer.appendChild(toast);
-
-    const closeBtn = toast.querySelector(".toast-close");
-    if (closeBtn) {
-        closeBtn.addEventListener("click", () => toast.remove());
-    }
-
-    setTimeout(() => {
-        if (toast.parentNode) toast.remove();
-    }, 3000);
-}
-
+// Event Listeners
 if (btnAjout) btnAjout.addEventListener("click", ouvrirModalAjout);
 if (btnFermerModal) btnFermerModal.addEventListener("click", fermerModal);
 if (addForm) addForm.addEventListener("submit", handleSubmit);
@@ -243,8 +217,14 @@ if (btnAnnuler) btnAnnuler.addEventListener("click", fermerModal);
 if (btnConfirmAnnuler) btnConfirmAnnuler.addEventListener("click", fermerModalConfirmation);
 if (btnConfirmOk) btnConfirmOk.addEventListener("click", executerDesactivation);
 
+if (confirmModal) {
+    confirmModal.addEventListener("click", function(e) {
+        if (e.target === confirmModal) fermerModalConfirmation();
+    });
+}
+
 if (addModal) {
-    addModal.addEventListener("click", function (e) {
+    addModal.addEventListener("click", function(e) {
         if (e.target === addModal) fermerModal();
     });
 }
@@ -263,5 +243,16 @@ if (btnVueCartes) {
     });
 }
 
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        if (confirmModal && confirmModal.classList.contains("active")) {
+            fermerModalConfirmation();
+        } else if (addModal && addModal.classList.contains("active")) {
+            fermerModal();
+        }
+    }
+});
 
+// Toast de bienvenue
+showToast("info", "Application prête", "Gérez vos inscriptions facilement", 3000);
 refreshUI();
