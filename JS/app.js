@@ -1,5 +1,5 @@
 // app.js - CORRIGÉ
-import { addEtudiant } from "./Services/service.js";
+import { addEtudiant, updateEtudiant } from "./Services/service.js";
 import { getEtudiants } from "./Store/studentStore.js";
 import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
 import {
@@ -23,11 +23,16 @@ import {
 
 let vueActive = "tableau";
 
+//On initialise une variable pour quand c'est le bouton modifier qui est selectionner
+let etudiantEnCoursModification = null;
+
 function ouvrirModalAjout() {
     console.log("ouvrirModalAjout appelée");
     if (!addModal) return;
     
+    etudiantEnCoursModification = null;
     modalTitre.textContent = "Nouvel étudiant";
+
     if (inpNom) inpNom.value = "";
     if (inpPrenom) inpPrenom.value = "";
     if (inpEmail) inpEmail.value = "";
@@ -35,6 +40,44 @@ function ouvrirModalAjout() {
     if (inpFormation) inpFormation.value = "DEV";
     if (inpAdresse) inpAdresse.value = "";
     if (inpPays) inpPays.value = "+221";
+
+    addModal.classList.add("active");
+}
+
+//Ouvrir le modal pour les modifications
+function ouvrirModalModification(id) {
+    console.log("ouvrirModalModification appelée pour l'ID:", id);
+    if (!addModal) return;
+    
+    const etudiant = getEtudiantById(id);
+    if (!etudiant) {
+        afficherToast("Étudiant introuvable", "error");
+        return;
+    }
+    
+    etudiantEnCoursModification = id;
+    modalTitre.textContent = "Modifier l'étudiant";
+    
+    
+    if (inpNom) inpNom.value = etudiant.nom || "";
+    if (inpPrenom) inpPrenom.value = etudiant.prenom || "";
+    if (inpEmail) inpEmail.value = etudiant.email || "";
+    if (inpAdresse) inpAdresse.value = etudiant.adresse || "";
+    if (inpFormation) inpFormation.value = etudiant.formation || "";
+    
+    if (etudiant.telephone) {
+        const parts = etudiant.telephone.split(" ");
+        if (parts.length >= 2) {
+            if (inpPays) inpPays.value = parts[0];
+            if (inpTelephone) inpTelephone.value = parts.slice(1).join(" ");
+        } else {
+            if (inpPays) inpPays.value = "+221";
+            if (inpTelephone) inpTelephone.value = etudiant.telephone;
+        }
+    } else {
+        if (inpPays) inpPays.value = "+221";
+        if (inpTelephone) inpTelephone.value = "";
+    }
 
     addModal.classList.add("active");
 }
