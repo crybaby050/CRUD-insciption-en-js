@@ -1,6 +1,6 @@
 // app.js - CORRIGÉ
 import { addEtudiant, updateEtudiant } from "./Services/service.js";
-import { getEtudiants } from "./Store/studentStore.js";
+import { getEtudiants, desactiverUnEtudiant } from "./Store/studentStore.js";
 import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
 import {
     addModal,
@@ -149,13 +149,12 @@ function refreshUI() {
 function gererDesactivation(id) {
     if (confirm("Êtes-vous sûr de vouloir désactiver cet étudiant ?")) {
         try {
-            import("./Store/studentStore.js").then(module => {
-                module.desactiverUnEtudiant(id);
-                refreshUI();
-                afficherToast("Étudiant désactivé avec succès");
-            });
+            desactiverUnEtudiant(id);
+            refreshUI();
+            afficherToast("Étudiant désactivé avec succès");
         } catch (error) {
             afficherToast("Erreur lors de la désactivation", "error");
+            console.error(error);
         }
     }
 }
