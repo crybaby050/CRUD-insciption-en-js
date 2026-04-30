@@ -4,7 +4,11 @@ import { getEtudiants, getEtudiantById, desactiverUnEtudiant } from "./Store/stu
 import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
 import { showToast, toastSuccess, toastError } from "./UI/toastRenderer.js";
 import { validateForm } from "./Utils/validationForm.js";
+import { drawerOverlay, drawer, btnFermerDrawer, btnRestaurerTout } from "./DOM/element.js";
 import { showErrors, clearErrors, initErrorListeners, initPhoneFormatting } from "./UI/errorRenderer.js";
+import { renderDrawer, restaurerTousSelectionnes } from "./UI/drawerRenderer.js";
+import { getEtudiantsDesactives } from "./Store/studentStore.js";
+import { btnRestaurer } from "./DOM/element.js";
 import {
     addModal, addForm, modalTitre,
     inpNom, inpPrenom, inpEmail, inpTelephone,
@@ -19,6 +23,9 @@ import {
 let vueActive = "tableau";
 let etudiantEnCoursModification = null;
 let idEtudiantADesactiver = null;
+
+
+window.refreshUI = refreshUI;
 
 // ========== MODAL AJOUT/MODIFICATION ==========
 
@@ -180,6 +187,43 @@ function refreshUI() {
     }
 }
 
+
+// ========== FONCTIONS DRAWER ==========
+
+function ouvrirDrawer() {
+    drawerOverlay?.classList.remove("hidden");
+    drawer?.classList.remove("translate-x-full");
+    drawer?.classList.add("translate-x-0");
+    renderDrawer();
+}
+
+function fermerDrawer() {
+    drawerOverlay?.classList.add("hidden");
+    drawer?.classList.add("translate-x-full");
+    drawer?.classList.remove("translate-x-0");
+}
+
+function handleRestaurerTout() {
+    restaurerTousSelectionnes();
+    fermerDrawer();
+    refreshUI();
+    toastSuccess("Succès", "Étudiants restaurés !");
+}
+
+// function handleViderCorbeille() {
+//     const desactives = getEtudiantsDesactives();
+//     if (desactives.length === 0) {
+//         toastError("Info", "La corbeille est déjà vide");
+//         return;
+//     }
+    
+//     if (confirm(`Supprimer définitivement ${desactives.length} étudiant(s) ?`)) {
+//         viderCorbeille();
+//         fermerDrawer();
+//         toastSuccess("Succès", "Corbeille vidée");
+//     }
+// }
+
 // ========== EVENT LISTENERS ==========
 
 btnAjout?.addEventListener("click", ouvrirModalAjout);
@@ -204,6 +248,26 @@ btnVueCartes?.addEventListener("click", () => { vueActive = "cartes"; refreshUI(
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
         if (confirmModal?.classList.contains("active")) fermerModalConfirmation();
+        else if (addModal?.classList.contains("active")) fermerModal();
+    }
+});
+
+// Ouvrir le drawer
+btnRestaurer?.addEventListener("click", ouvrirDrawer);
+
+// Fermer le drawer
+btnFermerDrawer?.addEventListener("click", fermerDrawer);
+drawerOverlay?.addEventListener("click", fermerDrawer);
+
+// Boutons du drawer
+btnRestaurerTout?.addEventListener("click", handleRestaurerTout);
+// btnViderCorbeille?.addEventListener("click", handleViderCorbeille);
+
+// Fermer avec Escape
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        if (drawer?.classList.contains("translate-x-0")) fermerDrawer();
+        else if (confirmModal?.classList.contains("active")) fermerModalConfirmation();
         else if (addModal?.classList.contains("active")) fermerModal();
     }
 });
