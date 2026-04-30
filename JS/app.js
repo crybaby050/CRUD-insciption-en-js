@@ -2,6 +2,7 @@
 import { addEtudiant, updateEtudiant } from "./Services/service.js";
 import { getEtudiants, getEtudiantById, desactiverUnEtudiant } from "./Store/studentStore.js";
 import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
+import { showToast, toastSuccess, toastError } from "./UI/toastRenderer.js";
 import {
     addModal,
     addForm,
