@@ -3,7 +3,8 @@ import {
     normalizeEtudiant,
     modifierUnEtudiant,
     desactiverUnEtudiant,
-    toutEffacer
+    toutEffacer,
+    getEtudiantById  
 } from "../Store/studentStore.js";
 
 export function createEtudiantObject(etudiant) {
