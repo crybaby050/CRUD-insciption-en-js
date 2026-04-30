@@ -314,3 +314,23 @@ body {
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
+
+
+/* Styles pour le modal de confirmation */
+#confirm-modal .modal-box {
+    max-width: 400px !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Animation pour le bouton de désactivation */
+#btn-confirm-ok {
+    transition: all 0.2s ease;
+}
+
+#btn-confirm-ok:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
