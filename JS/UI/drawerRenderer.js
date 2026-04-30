@@ -140,9 +140,64 @@ function updateRestaurerButton() {
     
     if (btnRestaurerTout) {
         btnRestaurerTout.disabled = count < 3;
-        btnRestaurerTout.style.opacity = count < 1 ? "0.5" : "1";
-        btnRestaurerTout.style.cursor = count < 1 ? "not-allowed" : "pointer";
+        btnRestaurerTout.style.opacity = count < 3 ? "0.5" : "1";
+        btnRestaurerTout.style.cursor = count < 3 ? "not-allowed" : "pointer";
     }
+}
+
+export function ouvrirModalRestorationMultiple() {
+    const restoreMultipleModal = document.getElementById("restore-multiple-modal");
+    const restoreCount = document.getElementById("restore-count");
+    const restoreMultipleMessage = document.getElementById("restore-multiple-message");
+    
+    if (!restoreMultipleModal) return;
+    
+    const count = selectedIds.size;
+    
+    if (restoreCount) {
+        restoreCount.textContent = count;
+    }
+    
+    if (restoreMultipleMessage) {
+        restoreMultipleMessage.innerHTML = `
+            Êtes-vous sûr de vouloir restaurer ces <strong id="restore-count">${count}</strong> étudiants ?<br>
+            <span style="font-size: 12px; opacity: 0.8;">Ils seront de nouveau visibles dans la liste.</span>
+        `;
+    }
+    
+    restoreMultipleModal.classList.add("active");
+}
+
+export function executerRestorationMultiple() {
+    if (selectedIds.size === 0) return;
+    
+    selectedIds.forEach(id => {
+        restaurerEtudiant(id);
+    });
+    
+    selectedIds.clear();
+    fermerModalRestorationMultiple();
+    renderDrawer();
+    
+    if (typeof window.refreshUI === "function") {
+        window.refreshUI();
+    }
+    
+    // Notification
+    if (typeof window.afficherToast === "function") {
+        window.afficherToast(`${selectedIds.size} étudiants restaurés !`, "success");
+    }
+}
+
+export function fermerModalRestorationMultiple() {
+    const modal = document.getElementById("restore-multiple-modal");
+    if (modal) {
+        modal.classList.remove("active");
+    }
+}
+
+export function getSelectedCount() {
+    return selectedIds.size;
 }
 
 export function restaurerTousSelectionnes() {

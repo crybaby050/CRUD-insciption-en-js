@@ -1,20 +1,3 @@
-// app.js
-import { addEtudiant, updateEtudiant } from "./Services/service.js";
-import { getEtudiants, getEtudiantById, desactiverUnEtudiant } from "./Store/studentStore.js";
-import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
-import { showToast, toastSuccess, toastError } from "./UI/toastRenderer.js";
-import { validateForm } from "./Utils/validationForm.js";
-import { drawerOverlay, drawer, btnFermerDrawer, btnRestaurerTout } from "./DOM/element.js";
-import { showErrors, clearErrors, initErrorListeners, initPhoneFormatting } from "./UI/errorRenderer.js";
-import { renderDrawer, restaurerTousSelectionnes } from "./UI/drawerRenderer.js";
-import { restoreModal, btnRestoreAnnuler, btnRestoreOk } from "./DOM/element.js";
-import { executerRestoration, fermerModalRestoration, getIdEtudiantARestaurer } from "./UI/drawerRenderer.js";
-import { getEtudiantsDesactives } from "./Store/studentStore.js";
-import { btnRestaurer } from "./DOM/element.js";
-import { renderPagination, getCurrentPageSlice, resetPagination } from "./UI/paginationRenderer.js";
-import { filterEtudiants } from "./Utils/searchFilter.js";
-import { searchInput, filterFormation, btnReinitialiser } from "./DOM/element.js";
-import { pagina } from "./DOM/element.js";
 import {
     addModal, addForm, modalTitre,
     inpNom, inpPrenom, inpEmail, inpTelephone,
@@ -24,15 +7,39 @@ import {
     viewTableau, viewCartes,
     confirmModal, confirmMessage,
     btnConfirmAnnuler, btnConfirmOk,
+    drawerOverlay, drawer, btnFermerDrawer, btnRestaurerTout,
+    restoreModal, btnRestoreAnnuler, btnRestoreOk,
+    restoreMultipleModal, btnRestoreMultipleAnnuler, btnRestoreMultipleOk,
+    searchInput, filterFormation, btnReinitialiser, btnRestaurer,
+    pagina
 } from "./DOM/element.js";
+
+import { addEtudiant, updateEtudiant } from "./Services/service.js";
+
+import { getEtudiants, getEtudiantById, desactiverUnEtudiant } from "./Store/studentStore.js";
+
+import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
+import { toastSuccess, toastError } from "./UI/toastRenderer.js";
+import { showErrors, clearErrors, initErrorListeners, initPhoneFormatting } from "./UI/errorRenderer.js";
+import {
+    renderDrawer,
+    executerRestoration,
+    fermerModalRestoration,
+    ouvrirModalRestorationMultiple,
+    executerRestorationMultiple,
+    fermerModalRestorationMultiple,
+    getSelectedCount
+} from "./UI/drawerRenderer.js";
+import { renderPagination, getCurrentPageSlice, resetPagination } from "./UI/paginationRenderer.js";
+
+import { validateForm } from "./Utils/validationForm.js";
+import { filterEtudiants } from "./Utils/searchFilter.js";
 
 let vueActive = "tableau";
 let etudiantEnCoursModification = null;
 let idEtudiantADesactiver = null;
-
 let currentSearch = "";
 let currentFilter = "";
-
 
 window.refreshUI = refreshUI;
 
@@ -40,51 +47,29 @@ window.refreshUI = refreshUI;
 
 function ouvrirModalAjout() {
     if (!addModal) return;
-    
     etudiantEnCoursModification = null;
     modalTitre.textContent = "Nouvel étudiant";
-    
-    inpNom.value = "";
-    inpPrenom.value = "";
-    inpEmail.value = "";
-    inpTelephone.value = "";
-    inpFormation.value = "";
-    inpAdresse.value = "";
+    inpNom.value = inpPrenom.value = inpEmail.value = inpTelephone.value = inpFormation.value = inpAdresse.value = "";
     inpPays.value = "+221";
-    
     clearErrors();
     addModal.classList.add("active");
 }
 
 function ouvrirModalModification(id) {
     if (!addModal) return;
-    
     const etudiant = getEtudiantById(id);
-    if (!etudiant) {
-        toastError("Erreur", "Étudiant introuvable");
-        return;
-    }
-    
+    if (!etudiant) { toastError("Erreur", "Étudiant introuvable"); return; }
     etudiantEnCoursModification = id;
     modalTitre.textContent = "Modifier l'étudiant";
-    
     inpNom.value = etudiant.nom || "";
     inpPrenom.value = etudiant.prenom || "";
     inpEmail.value = etudiant.email || "";
     inpAdresse.value = etudiant.adresse || "";
     inpFormation.value = etudiant.formation || "";
-    
     if (etudiant.telephone) {
         const parts = etudiant.telephone.split(" ");
-        if (parts.length >= 2) {
-            inpPays.value = parts[0];
-            inpTelephone.value = parts.slice(1).join(" ");
-        }
-    } else {
-        inpPays.value = "+221";
-        inpTelephone.value = "";
-    }
-    
+        if (parts.length >= 2) { inpPays.value = parts[0]; inpTelephone.value = parts.slice(1).join(" "); }
+    } else { inpPays.value = "+221"; inpTelephone.value = ""; }
     clearErrors();
     addModal.classList.add("active");
 }
@@ -97,15 +82,11 @@ function fermerModal() {
 
 // ========== SOUMISSION ==========
 
-// app.js - Modifier handleSubmit
-
 function handleSubmit(event) {
     event.preventDefault();
-
     const codePays = inpPays?.value || "+221";
     const numeroBrut = inpTelephone?.value.replace(/\s/g, "") || "";
     const telephoneComplet = numeroBrut ? `${codePays} ${numeroBrut}` : "";
-
     const etudiant = {
         nom: inpNom?.value.trim() || "",
         prenom: inpPrenom?.value.trim() || "",
@@ -114,29 +95,15 @@ function handleSubmit(event) {
         formation: inpFormation?.value || "",
         adresse: inpAdresse?.value.trim() || "",
     };
-
     const errors = validateForm(etudiant, codePays, etudiantEnCoursModification);
-    
-    if (Object.keys(errors).length > 0) {
-        showErrors(errors);
-        return;
-    }
-
+    if (Object.keys(errors).length > 0) { showErrors(errors); return; }
     etudiant.telephone = telephoneComplet;
-
     try {
-        if (etudiantEnCoursModification) {
-            updateEtudiant(etudiantEnCoursModification, etudiant);
-            toastSuccess("Succès", "Étudiant modifié !");
-        } else {
-            addEtudiant(etudiant);
-            toastSuccess("Succès", "Étudiant ajouté !");
-        }
+        if (etudiantEnCoursModification) { updateEtudiant(etudiantEnCoursModification, etudiant); toastSuccess("Succès", "Étudiant modifié !"); }
+        else { addEtudiant(etudiant); toastSuccess("Succès", "Étudiant ajouté !"); }
         fermerModal();
         refreshUI();
-    } catch (error) {
-        toastError("Erreur", error.message);
-    }
+    } catch (error) { toastError("Erreur", error.message); }
 }
 
 // ========== CONFIRMATION DÉSACTIVATION ==========
@@ -144,80 +111,51 @@ function handleSubmit(event) {
 function ouvrirModalConfirmation(id, nom, prenom) {
     if (!confirmModal) return;
     idEtudiantADesactiver = id;
-    confirmMessage.innerHTML = `
-        Êtes-vous sûr de vouloir supprimer <strong>${prenom} ${nom}</strong> ?<br>
-    `;
+    confirmMessage.innerHTML = `Êtes-vous sûr de vouloir supprimer <strong>${prenom} ${nom}</strong> ?`;
     confirmModal.classList.add("active");
 }
 
-function fermerModalConfirmation() {
-    confirmModal?.classList.remove("active");
-    idEtudiantADesactiver = null;
-}
+function fermerModalConfirmation() { confirmModal?.classList.remove("active"); idEtudiantADesactiver = null; }
 
 function executerDesactivation() {
     if (!idEtudiantADesactiver) return;
-    try {
-        desactiverUnEtudiant(idEtudiantADesactiver);
-        fermerModalConfirmation();
-        refreshUI();
-        toastSuccess("Succès", "Étudiant supprimer");
-    } catch (error) {
-        toastError("Erreur", "Échec de la suppression");
-    }
+    desactiverUnEtudiant(idEtudiantADesactiver);
+    fermerModalConfirmation();
+    refreshUI();
+    toastSuccess("Succès", "Étudiant supprimé");
 }
 
 function gererDesactivation(id) {
     const etudiant = getEtudiantById(id);
-    if (etudiant) {
-        ouvrirModalConfirmation(id, etudiant.nom, etudiant.prenom);
-    }
+    if (etudiant) ouvrirModalConfirmation(id, etudiant.nom, etudiant.prenom);
 }
 
 // ========== AFFICHAGE ==========
 
 function refreshUI() {
     let etudiants = getEtudiants();
-    
-    //Appliquer les filtres
     etudiants = filterEtudiants(etudiants, currentSearch, currentFilter);
-    
     const paginatedEtudiants = getCurrentPageSlice(etudiants);
-    
-    const handlers = {
-        onModifier: ouvrirModalModification,
-        onDesactiver: gererDesactivation,
-    };
+    const handlers = { onModifier: ouvrirModalModification, onDesactiver: gererDesactivation };
     
     if (vueActive === "tableau") {
         renderEtudiantList(paginatedEtudiants, handlers);
-        viewTableau.style.display = "block";
-        viewCartes.style.display = "none";
-        btnVueTableau?.classList.add("active");
-        btnVueCartes?.classList.remove("active");
+        viewTableau.style.display = "block"; viewCartes.style.display = "none";
+        btnVueTableau?.classList.add("active"); btnVueCartes?.classList.remove("active");
     } else {
         renderEtudiantCarteList(paginatedEtudiants, handlers);
-        viewTableau.style.display = "none";
-        viewCartes.style.display = "block";
-        btnVueTableau?.classList.remove("active");
-        btnVueCartes?.classList.add("active");
+        viewTableau.style.display = "none"; viewCartes.style.display = "block";
+        btnVueTableau?.classList.remove("active"); btnVueCartes?.classList.add("active");
     }
     
-    // Afficher la pagination
     if (pagina) {
         renderPagination(pagina, etudiants, (slice) => {
-            if (vueActive === "tableau") {
-                renderEtudiantList(slice, handlers);
-            } else {
-                renderEtudiantCarteList(slice, handlers);
-            }
+            vueActive === "tableau" ? renderEtudiantList(slice, handlers) : renderEtudiantCarteList(slice, handlers);
         });
     }
 }
 
-
-
-// ========== FONCTIONS DRAWER ==========
+// ========== DRAWER ==========
 
 function ouvrirDrawer() {
     drawerOverlay?.classList.remove("hidden");
@@ -232,27 +170,6 @@ function fermerDrawer() {
     drawer?.classList.remove("translate-x-0");
 }
 
-function handleRestaurerTout() {
-    restaurerTousSelectionnes();
-    fermerDrawer();
-    refreshUI();
-    toastSuccess("Succès", "Étudiants restaurés !");
-}
-
-// function handleViderCorbeille() {
-//     const desactives = getEtudiantsDesactives();
-//     if (desactives.length === 0) {
-//         toastError("Info", "La corbeille est déjà vide");
-//         return;
-//     }
-    
-//     if (confirm(`Supprimer définitivement ${desactives.length} étudiant(s) ?`)) {
-//         viderCorbeille();
-//         fermerDrawer();
-//         toastSuccess("Succès", "Corbeille vidée");
-//     }
-// }
-
 // ========== EVENT LISTENERS ==========
 
 btnAjout?.addEventListener("click", ouvrirModalAjout);
@@ -263,94 +180,52 @@ document.getElementById("btn-annuler")?.addEventListener("click", fermerModal);
 btnConfirmAnnuler?.addEventListener("click", fermerModalConfirmation);
 btnConfirmOk?.addEventListener("click", executerDesactivation);
 
-confirmModal?.addEventListener("click", e => {
-    if (e.target === confirmModal) fermerModalConfirmation();
-});
-
-addModal?.addEventListener("click", e => {
-    if (e.target === addModal) fermerModal();
-});
+confirmModal?.addEventListener("click", e => { if (e.target === confirmModal) fermerModalConfirmation(); });
+addModal?.addEventListener("click", e => { if (e.target === addModal) fermerModal(); });
 
 btnVueTableau?.addEventListener("click", () => { vueActive = "tableau"; refreshUI(); });
 btnVueCartes?.addEventListener("click", () => { vueActive = "cartes"; refreshUI(); });
 
-document.addEventListener("keydown", e => {
-    if (e.key === "Escape") {
-        if (confirmModal?.classList.contains("active")) fermerModalConfirmation();
-        else if (addModal?.classList.contains("active")) fermerModal();
-    }
-});
-
-// Ouvrir le drawer
+// Drawer
 btnRestaurer?.addEventListener("click", ouvrirDrawer);
-
-// Fermer le drawer
 btnFermerDrawer?.addEventListener("click", fermerDrawer);
 drawerOverlay?.addEventListener("click", fermerDrawer);
 
-// Boutons du drawer
-btnRestaurerTout?.addEventListener("click", handleRestaurerTout);
-// btnViderCorbeille?.addEventListener("click", handleViderCorbeille);
-
-// Fermer avec Escape
-document.addEventListener("keydown", e => {
-    if (e.key === "Escape") {
-        if (drawer?.classList.contains("translate-x-0")) fermerDrawer();
-        else if (confirmModal?.classList.contains("active")) fermerModalConfirmation();
-        else if (addModal?.classList.contains("active")) fermerModal();
-    }
+// Restauration multiple
+btnRestaurerTout?.addEventListener("click", ouvrirModalRestorationMultiple);
+btnRestoreMultipleAnnuler?.addEventListener("click", fermerModalRestorationMultiple);
+btnRestoreMultipleOk?.addEventListener("click", () => {
+    const count = getSelectedCount();
+    executerRestorationMultiple();
+    toastSuccess("Succès", `${count} étudiant(s) restauré(s) !`);
 });
+restoreMultipleModal?.addEventListener("click", e => { if (e.target === restoreMultipleModal) fermerModalRestorationMultiple(); });
 
+// Restauration simple
 btnRestoreAnnuler?.addEventListener("click", fermerModalRestoration);
-btnRestoreOk?.addEventListener("click", () => {
-    executerRestoration();
-    toastSuccess("Succès", "Étudiant restauré !");
+btnRestoreOk?.addEventListener("click", () => { executerRestoration(); toastSuccess("Succès", "Étudiant restauré !"); });
+restoreModal?.addEventListener("click", e => { if (e.target === restoreModal) fermerModalRestoration(); });
+
+// Filtres
+searchInput?.addEventListener("input", () => { currentSearch = searchInput.value; resetPagination(); refreshUI(); });
+filterFormation?.addEventListener("change", () => { currentFilter = filterFormation.value; resetPagination(); refreshUI(); });
+btnReinitialiser?.addEventListener("click", () => {
+    if (searchInput) searchInput.value = "";
+    if (filterFormation) filterFormation.value = "";
+    currentSearch = ""; currentFilter = "";
+    resetPagination(); refreshUI();
 });
 
-// Fermer le modal de restauration en cliquant sur l'overlay
-restoreModal?.addEventListener("click", e => {
-    if (e.target === restoreModal) fermerModalRestoration();
-});
-
-// Mettre à jour la gestion de la touche Escape
+// ✅ UN SEUL écouteur Escape
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
-        if (restoreModal?.classList.contains("active")) fermerModalRestoration();
+        if (restoreMultipleModal?.classList.contains("active")) fermerModalRestorationMultiple();
+        else if (restoreModal?.classList.contains("active")) fermerModalRestoration();
         else if (confirmModal?.classList.contains("active")) fermerModalConfirmation();
         else if (addModal?.classList.contains("active")) fermerModal();
         else if (drawer?.classList.contains("translate-x-0")) fermerDrawer();
     }
 });
-
-// Recherche en temps réel
-if (searchInput) {
-    searchInput.addEventListener("input", () => {
-        currentSearch = searchInput.value;
-        resetPagination();
-        refreshUI();
-    });
-}
-
-// Filtre par formation
-if (filterFormation) {
-    filterFormation.addEventListener("change", () => {
-        currentFilter = filterFormation.value;
-        resetPagination();
-        refreshUI();
-    });
-}
-
-// Réinitialiser les filtres
-if (btnReinitialiser) {
-    btnReinitialiser.addEventListener("click", () => {
-        if (searchInput) searchInput.value = "";
-        if (filterFormation) filterFormation.value = "";
-        currentSearch = "";
-        currentFilter = "";
-        resetPagination();
-        refreshUI();
-    });
-}
 
 // ========== INITIALISATION ==========
 initErrorListeners();

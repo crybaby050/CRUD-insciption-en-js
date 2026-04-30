@@ -627,6 +627,49 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMATION DE RESTAURATION MULTIPLE -->
+<div id="restore-multiple-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 400px;">
+        <div class="text-center p-6">
+            <!-- Icône de restauration -->
+            <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2.5">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                </svg>
+            </div>
+            
+            <!-- Titre -->
+            <h3 id="restore-multiple-titre" class="font-poppins text-lg font-bold mb-2" style="color:var(--text);">
+                Confirmer la restauration
+            </h3>
+            
+            <!-- Message -->
+            <p id="restore-multiple-message" class="text-sm mb-6" style="color:var(--text-muted);">
+                Êtes-vous sûr de vouloir restaurer ces <strong id="restore-count">0</strong> étudiants ?<br>
+                <span style="font-size: 12px; opacity: 0.8;">Ils seront de nouveau visibles dans la liste.</span>
+            </p>
+            
+            <!-- Boutons -->
+            <div class="flex gap-3">
+                <button id="btn-restore-multiple-annuler" 
+                    class="flex-1 py-2.5 rounded-xl font-poppins font-semibold text-sm transition-colors"
+                    style="background:var(--input-bg);color:var(--text-muted);border:1.5px solid var(--border);">
+                    Annuler
+                </button>
+                <button id="btn-restore-multiple-ok" 
+                    class="flex-1 py-2.5 rounded-xl font-poppins font-semibold text-sm bg-green text-white hover:bg-green-dark transition-colors flex items-center justify-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                    Restaurer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <script type="module" src="JS/app.js"></script>
 
 </body>

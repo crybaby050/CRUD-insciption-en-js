@@ -53,3 +53,9 @@ export const restoreTitre = document.getElementById("restore-titre");
 export const restoreMessage = document.getElementById("restore-message");
 export const btnRestoreAnnuler = document.getElementById("btn-restore-annuler");
 export const btnRestoreOk = document.getElementById("btn-restore-ok");
+
+export const restoreMultipleModal = document.getElementById("restore-multiple-modal");
+export const restoreMultipleMessage = document.getElementById("restore-multiple-message");
+export const restoreCount = document.getElementById("restore-count");
+export const btnRestoreMultipleAnnuler = document.getElementById("btn-restore-multiple-annuler");
+export const btnRestoreMultipleOk = document.getElementById("btn-restore-multiple-ok");
