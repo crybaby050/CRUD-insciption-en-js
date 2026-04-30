@@ -37,6 +37,16 @@ export function ajouterUnEtudiantStore(etudiant) {
     sauvegarderLesEtudiants();
 }
 
+// fonction : récupérer un étudiant par son ID
+export function getEtudiantById(id) {
+    return etudiants.find(e => e.id === id) || null;
+}
+
+// fonction : récupérer tous les étudiants
+export function getAllEtudiants() {
+    return etudiants;
+}
+
 export function modifierUnEtudiant(id, modifications) {
     etudiants = etudiants.map(e =>
         e.id === id ? normalizeEtudiant({ ...e, ...modifications }) : e
