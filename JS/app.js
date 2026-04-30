@@ -37,7 +37,7 @@ function ouvrirModalAjout() {
     if (inpPrenom) inpPrenom.value = "";
     if (inpEmail) inpEmail.value = "";
     if (inpTelephone) inpTelephone.value = "";
-    if (inpFormation) inpFormation.value = "DEV";
+    if (inpFormation) inpFormation.value = "";
     if (inpAdresse) inpAdresse.value = "";
     if (inpPays) inpPays.value = "+221";
 
@@ -85,6 +85,7 @@ function ouvrirModalModification(id) {
 function fermerModal() {
     if (addModal) {
         addModal.classList.remove("active");
+        etudiantEnCoursModification = null;
     }
 }
 
