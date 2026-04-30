@@ -4,7 +4,7 @@ import { getEtudiants, getEtudiantById, desactiverUnEtudiant } from "./Store/stu
 import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
 import { showToast, toastSuccess, toastError } from "./UI/toastRenderer.js";
 import { validateForm } from "./Utils/validationForm.js";
-import { drawerOverlay, drawer, btnFermerDrawer, btnRestaurerTout, btnViderCorbeille } from "./DOM/element.js";
+import { drawerOverlay, drawer, btnFermerDrawer, btnRestaurerTout } from "./DOM/element.js";
 import { showErrors, clearErrors, initErrorListeners, initPhoneFormatting } from "./UI/errorRenderer.js";
 import { renderDrawer, restaurerTousSelectionnes } from "./UI/drawerRenderer.js";
 import { getEtudiantsDesactives } from "./Store/studentStore.js";
@@ -210,19 +210,19 @@ function handleRestaurerTout() {
     toastSuccess("Succès", "Étudiants restaurés !");
 }
 
-function handleViderCorbeille() {
-    const desactives = getEtudiantsDesactives();
-    if (desactives.length === 0) {
-        toastError("Info", "La corbeille est déjà vide");
-        return;
-    }
+// function handleViderCorbeille() {
+//     const desactives = getEtudiantsDesactives();
+//     if (desactives.length === 0) {
+//         toastError("Info", "La corbeille est déjà vide");
+//         return;
+//     }
     
-    if (confirm(`Supprimer définitivement ${desactives.length} étudiant(s) ?`)) {
-        viderCorbeille();
-        fermerDrawer();
-        toastSuccess("Succès", "Corbeille vidée");
-    }
-}
+//     if (confirm(`Supprimer définitivement ${desactives.length} étudiant(s) ?`)) {
+//         viderCorbeille();
+//         fermerDrawer();
+//         toastSuccess("Succès", "Corbeille vidée");
+//     }
+// }
 
 // ========== EVENT LISTENERS ==========
 
@@ -261,7 +261,7 @@ drawerOverlay?.addEventListener("click", fermerDrawer);
 
 // Boutons du drawer
 btnRestaurerTout?.addEventListener("click", handleRestaurerTout);
-btnViderCorbeille?.addEventListener("click", handleViderCorbeille);
+// btnViderCorbeille?.addEventListener("click", handleViderCorbeille);
 
 // Fermer avec Escape
 document.addEventListener("keydown", e => {

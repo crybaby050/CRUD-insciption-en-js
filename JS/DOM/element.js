@@ -41,5 +41,5 @@ export const drawerList = document.getElementById("drawer-list");
 export const drawerCount = document.getElementById("drawer-count");
 export const btnFermerDrawer = document.getElementById("btn-fermer-drawer");
 export const btnRestaurerTout = document.getElementById("btn-restaurer-tout");
-export const btnViderCorbeille = document.getElementById("btn-vider-corbeille");
+// export const btnViderCorbeille = document.getElementById("btn-vider-corbeille");
 export const countSelected = document.getElementById("count-selected");
