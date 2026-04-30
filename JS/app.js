@@ -177,7 +177,11 @@ function gererDesactivation(id) {
 // ========== AFFICHAGE ==========
 
 function refreshUI() {
-    const etudiants = getEtudiants();
+    let etudiants = getEtudiants();
+    
+    //Appliquer les filtres
+    etudiants = filterEtudiants(etudiants, currentSearch, currentFilter);
+    
     const paginatedEtudiants = getCurrentPageSlice(etudiants);
     
     const handlers = {
@@ -210,6 +214,7 @@ function refreshUI() {
         });
     }
 }
+
 
 
 // ========== FONCTIONS DRAWER ==========
