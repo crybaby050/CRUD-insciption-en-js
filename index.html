@@ -463,6 +463,51 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMATION DE SUPPRESSION -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 400px;">
+            <div class="text-center p-6">
+                <!-- Icône d'avertissement -->
+                <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                </div>
+
+                <!-- Titre -->
+                <h3 id="confirm-titre" class="font-poppins text-lg font-bold mb-2" style="color:var(--text);">
+                    Confirmer la suppression
+                </h3>
+
+                <!-- Message -->
+                <p id="confirm-message" class="text-sm mb-6" style="color:var(--text-muted);">
+                    Êtes-vous sûr de vouloir suppromer cet étudiant ?<br>
+                </p>
+
+                <!-- Boutons -->
+                <div class="flex gap-3">
+                    <button id="btn-confirm-annuler"
+                        class="flex-1 py-2.5 rounded-xl font-poppins font-semibold text-sm transition-colors"
+                        style="background:var(--input-bg);color:var(--text-muted);border:1.5px solid var(--border);">
+                        Annuler
+                    </button>
+                    <button id="btn-confirm-ok"
+                        class="flex-1 py-2.5 rounded-xl font-poppins font-semibold text-sm bg-red-500 text-white hover:bg-red-600 transition-colors flex items-center justify-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        </svg>
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="JS/app.js"></script>
 
 </body>
