@@ -1,4 +1,4 @@
-const PER_PAGE = 10;
+const PER_PAGE = 5;
 let currentPage = 1;
 
 
