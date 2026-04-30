@@ -30,6 +30,9 @@ let vueActive = "tableau";
 let etudiantEnCoursModification = null;
 let idEtudiantADesactiver = null;
 
+let currentSearch = "";
+let currentFilter = "";
+
 
 window.refreshUI = refreshUI;
 
