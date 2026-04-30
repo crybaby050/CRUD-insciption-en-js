@@ -7,15 +7,18 @@ export const searchInput = document.getElementById("search-input");
 export const filterFormation = document.getElementById("filter-formation");
 export const btnReinitialiser = document.getElementById("btn-reinitialiser");
 export const btnRestaurer = document.getElementById("btn-restaurer");
+
 export const btnVueTableau = document.getElementById("btn-vue-tableau");
 export const btnVueCartes = document.getElementById("btn-vue-cartes");
 export const viewTableau = document.getElementById("view-tableau");
 export const viewCartes = document.getElementById("view-cartes");
 export const tableBody = document.getElementById("table-body");
 export const cardGrid = document.getElementById("card-grid");
+
 export const overlay = document.getElementById("overlay");
 export const toastContainer = document.getElementById("toast-container");
 export const pagina = document.getElementById("pagination");
+
 export const addModal = document.getElementById("add-modal");
 export const addForm = document.getElementById("add-form");
 export const modalTitre = document.getElementById("modal-titre");
