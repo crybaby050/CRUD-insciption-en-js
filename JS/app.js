@@ -252,6 +252,26 @@ document.addEventListener("keydown", e => {
     }
 });
 
+// Ouvrir le drawer
+btnRestaurer?.addEventListener("click", ouvrirDrawer);
+
+// Fermer le drawer
+btnFermerDrawer?.addEventListener("click", fermerDrawer);
+drawerOverlay?.addEventListener("click", fermerDrawer);
+
+// Boutons du drawer
+btnRestaurerTout?.addEventListener("click", handleRestaurerTout);
+btnViderCorbeille?.addEventListener("click", handleViderCorbeille);
+
+// Fermer avec Escape
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        if (drawer?.classList.contains("translate-x-0")) fermerDrawer();
+        else if (confirmModal?.classList.contains("active")) fermerModalConfirmation();
+        else if (addModal?.classList.contains("active")) fermerModal();
+    }
+});
+
 // ========== INITIALISATION ==========
 initErrorListeners();
 initPhoneFormatting();
