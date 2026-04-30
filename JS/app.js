@@ -4,7 +4,11 @@ import { getEtudiants, getEtudiantById, desactiverUnEtudiant } from "./Store/stu
 import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
 import { showToast, toastSuccess, toastError } from "./UI/toastRenderer.js";
 import { validateForm } from "./Utils/validationForm.js";
+import { drawerOverlay, drawer, btnFermerDrawer, btnRestaurerTout, btnViderCorbeille } from "./DOM/element.js";
 import { showErrors, clearErrors, initErrorListeners, initPhoneFormatting } from "./UI/errorRenderer.js";
+import { renderDrawer, restaurerTousSelectionnes } from "./UI/drawerRenderer.js";
+import { getEtudiantsDesactives, viderCorbeille } from "./Store/studentStore.js";
+import { btnRestaurer } from "./DOM/element.js";
 import {
     addModal, addForm, modalTitre,
     inpNom, inpPrenom, inpEmail, inpTelephone,
