@@ -27,3 +27,9 @@ export const btnFermerModal = document.getElementById("btn-fermer-modal");
 export const inpFormation = document.getElementById("inp-formation");
 export const inpAdresse = document.getElementById("inp-adresse"); 
 export const inpPays = document.getElementById("inp-pays");
+
+export const confirmModal = document.getElementById("confirm-modal");
+export const confirmTitre = document.getElementById("confirm-titre");
+export const confirmMessage = document.getElementById("confirm-message");
+export const btnConfirmAnnuler = document.getElementById("btn-confirm-annuler");
+export const btnConfirmOk = document.getElementById("btn-confirm-ok");
