@@ -195,15 +195,9 @@ function refreshUI() {
 
 //Desactivation ou suppression d'un etudiant
 function gererDesactivation(id) {
-    if (confirm("Êtes-vous sûr de vouloir désactiver cet étudiant ?")) {
-        try {
-            desactiverUnEtudiant(id);
-            refreshUI();
-            afficherToast("Étudiant désactivé avec succès");
-        } catch (error) {
-            afficherToast("Erreur lors de la désactivation", "error");
-            console.error(error);
-        }
+    const etudiant = getEtudiantById(id);
+    if (etudiant) {
+        ouvrirModalConfirmation(id, etudiant.nom, etudiant.prenom);
     }
 }
 
