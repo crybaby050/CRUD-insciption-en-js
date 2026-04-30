@@ -19,6 +19,11 @@ import {
     btnVueCartes,
     viewTableau,
     viewCartes,
+    confirmModal,     
+    confirmTitre,     
+    confirmMessage,   
+    btnConfirmAnnuler,
+    btnConfirmOk,   
 } from "./DOM/element.js";
 
 let vueActive = "tableau";
@@ -145,7 +150,7 @@ function refreshUI() {
     }
 }
 
-//Desactivation
+//Desactivation ou suppression d'un etudiant
 function gererDesactivation(id) {
     if (confirm("Êtes-vous sûr de vouloir désactiver cet étudiant ?")) {
         try {
