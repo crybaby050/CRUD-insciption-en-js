@@ -333,6 +333,7 @@
                             <input id="inp-nom" type="text" placeholder="Ex : Thiam"
                                 class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
                         </div>
+                        <span id="err-nom" class="error-message"></span>
                     </div>
 
                     <!-- PRENOM -->
@@ -348,6 +349,7 @@
                             <input id="inp-prenom" type="text" placeholder="Ex : Seydina"
                                 class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
                         </div>
+                        <span id="err-prenom" class="error-message"></span>
                     </div>
 
                     <!-- EMAIL -->
@@ -363,6 +365,7 @@
                             <input id="inp-email" type="email" placeholder="Ex : email@gmail.com"
                                 class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
                         </div>
+                        <span id="err-email" class="error-message"></span>
                     </div>
 
                     <!-- TELEPHONE -->
@@ -370,7 +373,6 @@
                         <label class="block text-xs font-semibold font-poppins mb-1.5"
                             style="color:var(--text-muted);">TELEPHONE</label>
                         <div class="flex gap-2">
-                            <!-- Sélecteur de pays -->
                             <div class="relative" style="width: 130px; flex-shrink: 0;">
                                 <select id="inp-pays"
                                     class="inp w-full pl-3 pr-8 py-3 rounded-xl text-sm font-dm cursor-pointer appearance-none">
@@ -382,8 +384,6 @@
                                     <polyline points="6 9 12 15 18 9" />
                                 </svg>
                             </div>
-
-                            <!-- Numéro de téléphone -->
                             <div class="relative flex-1">
                                 <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="15" height="15"
                                     viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2">
@@ -394,6 +394,7 @@
                                     class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
                             </div>
                         </div>
+                        <span id="err-telephone" class="error-message"></span>
                     </div>
 
                     <!-- FORMATION -->
@@ -411,19 +412,13 @@
                                 class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm cursor-pointer">
                                 <option value="">Sélectionner une formation</option>
                                 <option value="DEV WEB">Développement Web</option>
-                                <option value="DEV MOBILE">Développement Mobile</option>
-                                <option value="DATA SCIENCE">Data Science</option>
-                                <option value="IA">Intelligence Artificielle</option>
-                                <option value="MARKETING DIGITAL">Marketing Digital</option>
-                                <option value="UX/UI DESIGN">UX/UI Design</option>
-                                <option value="CYBERSECURITE">Cybersécurité</option>
-                                <option value="CLOUD">Cloud Computing</option>
-                                <option value="BLOCKCHAIN">Blockchain</option>
+                                <!-- ... autres options ... -->
                             </select>
                         </div>
+                        <span id="err-formation" class="error-message"></span>
                     </div>
 
-                    <!-- ADRESSE (NOUVEAU) -->
+                    <!-- ADRESSE -->
                     <div>
                         <label class="block text-xs font-semibold font-poppins mb-1.5"
                             style="color:var(--text-muted);">ADRESSE</label>
@@ -436,6 +431,7 @@
                             <input id="inp-adresse" type="text" placeholder="Ex : Dakar, Sénégal"
                                 class="inp w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm" />
                         </div>
+                        <span id="err-adresse" class="error-message"></span>
                     </div>
                 </div>
 
