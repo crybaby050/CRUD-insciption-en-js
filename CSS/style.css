@@ -496,3 +496,21 @@ body {
         max-width: 100%;
     }
 }
+
+
+
+.error-message {
+    display: none;
+    color: #ef4444;
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    margin-top: 4px;
+    padding-left: 4px;
+    line-height: 1.4;
+}
+
+.inp.invalid {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    background: #fef2f2 !important;
+}
