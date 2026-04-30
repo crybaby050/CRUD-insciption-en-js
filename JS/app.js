@@ -14,11 +14,11 @@ import {
     btnFermerModal,
     inpFormation,
     inpAdresse,
-    inpPays,       
-    btnVueTableau, 
-    btnVueCartes,  
-    viewTableau,   
-    viewCartes,  
+    inpPays,
+    btnVueTableau,
+    btnVueCartes,
+    viewTableau,
+    viewCartes,
 } from "./DOM/element.js";
 
 let vueActive = "tableau";
@@ -29,7 +29,7 @@ let etudiantEnCoursModification = null;
 function ouvrirModalAjout() {
     console.log("ouvrirModalAjout appelée");
     if (!addModal) return;
-    
+
     etudiantEnCoursModification = null;
     modalTitre.textContent = "Nouvel étudiant";
 
@@ -48,23 +48,23 @@ function ouvrirModalAjout() {
 function ouvrirModalModification(id) {
     console.log("ouvrirModalModification appelée pour l'ID:", id);
     if (!addModal) return;
-    
+
     const etudiant = getEtudiantById(id);
     if (!etudiant) {
         afficherToast("Étudiant introuvable", "error");
         return;
     }
-    
+
     etudiantEnCoursModification = id;
     modalTitre.textContent = "Modifier l'étudiant";
-    
-    
+
+
     if (inpNom) inpNom.value = etudiant.nom || "";
     if (inpPrenom) inpPrenom.value = etudiant.prenom || "";
     if (inpEmail) inpEmail.value = etudiant.email || "";
     if (inpAdresse) inpAdresse.value = etudiant.adresse || "";
     if (inpFormation) inpFormation.value = etudiant.formation || "";
-    
+
     if (etudiant.telephone) {
         const parts = etudiant.telephone.split(" ");
         if (parts.length >= 2) {
@@ -126,10 +126,10 @@ function handleSubmit(event) {
 function refreshUI() {
     const etudiants = getEtudiants();
     const handlers = {
-        onModifier: null,
-        onDesactiver: null,
+        onModifier: ouvrirModalModification,
+        onDesactiver: gererDesactivation,   
     };
-    
+
     if (vueActive === "tableau") {
         renderEtudiantList(etudiants, handlers);
         if (viewTableau) viewTableau.style.display = "block";
@@ -145,32 +145,47 @@ function refreshUI() {
     }
 }
 
+//Desactivation
+function gererDesactivation(id) {
+    if (confirm("Êtes-vous sûr de vouloir désactiver cet étudiant ?")) {
+        try {
+            import("./Store/studentStore.js").then(module => {
+                module.desactiverUnEtudiant(id);
+                refreshUI();
+                afficherToast("Étudiant désactivé avec succès");
+            });
+        } catch (error) {
+            afficherToast("Erreur lors de la désactivation", "error");
+        }
+    }
+}
+
 function afficherToast(message, type = "success") {
     const toastContainer = document.getElementById("toast-container");
     if (!toastContainer) return;
-    
+
     const toast = document.createElement("div");
     toast.className = "toast";
     toast.style.background = type === "error" ? "#ef4444" : "#2A9D8F";
-    
+
     toast.innerHTML = `
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            ${type === "error" ? 
-                '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' :
-                '<polyline points="20 6 9 17 4 12"/>'
-            }
+            ${type === "error" ?
+            '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' :
+            '<polyline points="20 6 9 17 4 12"/>'
+        }
         </svg>
         <span style="font-size: 14px; flex: 1;">${message}</span>
         <button class="toast-close" style="background:none;border:none;color:white;cursor:pointer;font-size:18px;padding:0 4px;">×</button>
     `;
-    
+
     toastContainer.appendChild(toast);
-    
+
     const closeBtn = toast.querySelector(".toast-close");
     if (closeBtn) {
         closeBtn.addEventListener("click", () => toast.remove());
     }
-    
+
     setTimeout(() => {
         if (toast.parentNode) toast.remove();
     }, 3000);
@@ -184,7 +199,7 @@ const btnAnnuler = document.getElementById("btn-annuler");
 if (btnAnnuler) btnAnnuler.addEventListener("click", fermerModal);
 
 if (addModal) {
-    addModal.addEventListener("click", function(e) {
+    addModal.addEventListener("click", function (e) {
         if (e.target === addModal) fermerModal();
     });
 }
