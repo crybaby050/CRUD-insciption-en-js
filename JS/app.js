@@ -31,6 +31,9 @@ let vueActive = "tableau";
 //On initialise une variable pour quand c'est le bouton modifier qui est selectionner
 let etudiantEnCoursModification = null;
 
+//On initialise une variable pour quand c'est le bouton de suppression qui est selectionner
+let idEtudiantADesactiver = null
+
 function ouvrirModalAjout() {
     console.log("ouvrirModalAjout appelée");
     if (!addModal) return;
@@ -92,6 +95,23 @@ function fermerModal() {
         addModal.classList.remove("active");
         etudiantEnCoursModification = null;
     }
+}
+
+// ouvrir le modal de confirmation
+function ouvrirModalConfirmation(id, nom, prenom) {
+    if (!confirmModal) return;
+    
+    idEtudiantADesactiver = id;
+    
+    // Personnaliser le message
+    if (confirmTitre) confirmTitre.textContent = "Confirmer la Supression";
+    if (confirmMessage) {
+        confirmMessage.innerHTML = `
+            Êtes-vous sûr de vouloir supprimer <strong>${prenom} ${nom}</strong> ?<br>
+        `;
+    }
+    
+    confirmModal.classList.add("active");
 }
 
 function handleSubmit(event) {
