@@ -24,6 +24,9 @@ let vueActive = "tableau";
 let etudiantEnCoursModification = null;
 let idEtudiantADesactiver = null;
 
+
+window.refreshUI = refreshUI;
+
 // ========== MODAL AJOUT/MODIFICATION ==========
 
 function ouvrirModalAjout() {
@@ -181,6 +184,43 @@ function refreshUI() {
         viewCartes.style.display = "block";
         btnVueTableau?.classList.remove("active");
         btnVueCartes?.classList.add("active");
+    }
+}
+
+
+// ========== FONCTIONS DRAWER ==========
+
+function ouvrirDrawer() {
+    drawerOverlay?.classList.remove("hidden");
+    drawer?.classList.remove("translate-x-full");
+    drawer?.classList.add("translate-x-0");
+    renderDrawer();
+}
+
+function fermerDrawer() {
+    drawerOverlay?.classList.add("hidden");
+    drawer?.classList.add("translate-x-full");
+    drawer?.classList.remove("translate-x-0");
+}
+
+function handleRestaurerTout() {
+    restaurerTousSelectionnes();
+    fermerDrawer();
+    refreshUI();
+    toastSuccess("Succès", "Étudiants restaurés !");
+}
+
+function handleViderCorbeille() {
+    const desactives = getEtudiantsDesactives();
+    if (desactives.length === 0) {
+        toastError("Info", "La corbeille est déjà vide");
+        return;
+    }
+    
+    if (confirm(`Supprimer définitivement ${desactives.length} étudiant(s) ?`)) {
+        viderCorbeille();
+        fermerDrawer();
+        toastSuccess("Succès", "Corbeille vidée");
     }
 }
 
