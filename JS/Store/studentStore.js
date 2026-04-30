@@ -85,3 +85,22 @@ export function restaurerEtudiant(id) {
 //     etudiants = etudiants.filter(e => e.statut === true);
 //     sauvegarderLesEtudiants();
 // }
+
+
+
+export function emailExiste(email, excludeId = null) {
+    return etudiants.some(e => 
+        e.email.toLowerCase() === email.toLowerCase() && 
+        e.id !== excludeId
+    );
+}
+
+export function telephoneExiste(telephone, excludeId = null) {
+    // Nettoyer le téléphone pour la comparaison (garder que les chiffres)
+    const cleanPhone = telephone.replace(/\D/g, "");
+    
+    return etudiants.some(e => {
+        const existingPhone = (e.telephone || "").replace(/\D/g, "");
+        return existingPhone === cleanPhone && e.id !== excludeId;
+    });
+}
