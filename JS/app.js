@@ -106,13 +106,20 @@ function handleSubmit(event) {
     };
 
     try {
-        addEtudiant(etudiant);
+        if (etudiantEnCoursModification) {
+            //Modification
+            updateEtudiant(etudiantEnCoursModification, etudiant);
+            afficherToast("Étudiant modifié avec succès !");
+        } else {
+            //Ajout
+            addEtudiant(etudiant);
+            afficherToast("Étudiant ajouté avec succès !");
+        }
         fermerModal();
         refreshUI();
-        afficherToast("Étudiant ajouté avec succès !");
     } catch (error) {
         afficherToast(error.message, "error");
-        console.error("Erreur lors de l'ajout :", error);
+        console.error("Erreur :", error);
     }
 }
 
