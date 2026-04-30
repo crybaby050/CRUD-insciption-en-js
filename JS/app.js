@@ -88,6 +88,8 @@ function fermerModal() {
 
 // ========== SOUMISSION ==========
 
+// app.js - Modifier handleSubmit
+
 function handleSubmit(event) {
     event.preventDefault();
 
@@ -104,7 +106,7 @@ function handleSubmit(event) {
         adresse: inpAdresse?.value.trim() || "",
     };
 
-    const errors = validateForm(etudiant, codePays);
+    const errors = validateForm(etudiant, codePays, etudiantEnCoursModification);
     
     if (Object.keys(errors).length > 0) {
         showErrors(errors);
