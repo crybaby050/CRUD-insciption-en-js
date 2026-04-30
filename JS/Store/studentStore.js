@@ -65,3 +65,23 @@ export function toutEffacer() {
     etudiants = [];
     sauvegarderLesEtudiants();
 }
+
+
+// Récupérer tous les étudiants désactivés
+export function getEtudiantsDesactives() {
+    return etudiants.filter(e => e.statut === false);
+}
+
+// Restaurer un étudiant (remettre statut à true)
+export function restaurerEtudiant(id) {
+    etudiants = etudiants.map(e =>
+        e.id === id ? { ...e, statut: true } : e
+    );
+    sauvegarderLesEtudiants();
+}
+
+// Vider la corbeille (supprimer définitivement les désactivés)
+// export function viderCorbeille() {
+//     etudiants = etudiants.filter(e => e.statut === true);
+//     sauvegarderLesEtudiants();
+// }
