@@ -12,6 +12,8 @@ import { executerRestoration, fermerModalRestoration, getIdEtudiantARestaurer } 
 import { getEtudiantsDesactives } from "./Store/studentStore.js";
 import { btnRestaurer } from "./DOM/element.js";
 import { renderPagination, getCurrentPageSlice, resetPagination } from "./UI/paginationRenderer.js";
+import { filterEtudiants } from "./Utils/searchFilter.js";
+import { searchInput, filterFormation, btnReinitialiser } from "./DOM/element.js";
 import { pagina } from "./DOM/element.js";
 import {
     addModal, addForm, modalTitre,
