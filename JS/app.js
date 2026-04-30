@@ -122,6 +122,21 @@ function fermerModalConfirmation() {
     }
 }
 
+//Fonction qui execute la suppression d'un etudiant
+function executerDesactivation() {
+    if (!idEtudiantADesactiver) return;
+    
+    try {
+        desactiverUnEtudiant(idEtudiantADesactiver);
+        fermerModalConfirmation();
+        refreshUI();
+        afficherToast("Étudiant désactivé avec succès");
+    } catch (error) {
+        afficherToast("Erreur lors de la désactivation", "error");
+        console.error(error);
+    }
+}
+
 function handleSubmit(event) {
     event.preventDefault();
 
