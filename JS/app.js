@@ -3,7 +3,7 @@ import { addEtudiant, updateEtudiant } from "./Services/service.js";
 import { getEtudiants, getEtudiantById, desactiverUnEtudiant } from "./Store/studentStore.js";
 import { renderEtudiantList, renderEtudiantCarteList } from "./UI/etudiantRenderer.js";
 import { showToast, toastSuccess, toastError } from "./UI/toastRenderer.js";
-import { validateForm } from "./Utils/validators.js";
+import { validateForm } from "./Utils/validationForm.js";
 import { showErrors, clearErrors, initErrorListeners, initPhoneFormatting } from "./UI/errorRenderer.js";
 import {
     addModal, addForm, modalTitre,

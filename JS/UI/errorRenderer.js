@@ -1,3 +1,5 @@
+import { validatePhoneByCountry } from "../Utils/validationForm.js";
+
 export function showErrors(errors) {
     clearErrors();
     
@@ -29,6 +31,9 @@ export function showErrors(errors) {
     }
 }
 
+/**
+ * Efface toutes les erreurs
+ */
 export function clearErrors() {
     const fields = ["nom", "prenom", "email", "telephone", "adresse", "formation"];
     
@@ -47,7 +52,27 @@ export function clearErrors() {
     });
 }
 
-export function initValidationListeners() {
+/**
+ * Efface l'erreur d'un champ spécifique
+ */
+export function clearFieldError(fieldName) {
+    const errEl = document.getElementById(`err-${fieldName}`);
+    const inputEl = document.getElementById(`inp-${fieldName}`);
+    
+    if (errEl) {
+        errEl.textContent = "";
+        errEl.style.display = "none";
+    }
+    if (inputEl) {
+        inputEl.classList.remove("invalid");
+        inputEl.style.borderColor = "";
+    }
+}
+
+/**
+ * Initialise les écouteurs pour effacer les erreurs à la saisie
+ */
+export function initErrorListeners() {  // ✅ Nom correspond à l'import dans app.js
     const fields = ["nom", "prenom", "email", "telephone", "adresse", "formation"];
     
     fields.forEach((field) => {
@@ -55,21 +80,19 @@ export function initValidationListeners() {
         if (inputEl) {
             // Effacer l'erreur quand l'utilisateur tape
             inputEl.addEventListener("input", () => {
-                const errEl = document.getElementById(`err-${field}`);
-                if (errEl) {
-                    errEl.textContent = "";
-                    errEl.style.display = "none";
-                }
-                inputEl.classList.remove("invalid");
-                inputEl.style.borderColor = "";
+                clearFieldError(field);
+            });
+            inputEl.addEventListener("change", () => {
+                clearFieldError(field);
             });
         }
     });
     
-    initPhoneValidation();
+    // Initialiser la validation du téléphone
+    initPhoneFormatting();
 }
 
-function initPhoneValidation() {
+export function initPhoneFormatting() {
     const inpPays = document.getElementById("inp-pays");
     const inpTelephone = document.getElementById("inp-telephone");
     
@@ -80,18 +103,13 @@ function initPhoneValidation() {
         const countryCode = inpPays.value;
         inpTelephone.value = "";
         inpTelephone.placeholder = countryCode === "+221" ? "77 123 45 67" : "2 123 456";
-        inpTelephone.maxLength = countryCode === "+221" ? 11 : 9; // Avec les espaces
+        inpTelephone.maxLength = countryCode === "+221" ? 12 : 9;
         
         // Effacer l'erreur
-        const errEl = document.getElementById("err-telephone");
-        if (errEl) {
-            errEl.textContent = "";
-            errEl.style.display = "none";
-        }
-        inpTelephone.classList.remove("invalid");
-        inpTelephone.style.borderColor = "";
+        clearFieldError("telephone");
     });
     
+    // Formater le téléphone pendant la saisie
     inpTelephone.addEventListener("input", (e) => {
         const countryCode = inpPays.value;
         let value = e.target.value.replace(/\D/g, "");
@@ -120,7 +138,6 @@ function initPhoneValidation() {
         const phoneNumber = inpTelephone.value.replace(/\D/g, "");
         
         if (phoneNumber) {
-            const { validatePhoneByCountry } = require("../Utils/validators.js");
             const error = validatePhoneByCountry(phoneNumber, countryCode);
             
             if (error) {
