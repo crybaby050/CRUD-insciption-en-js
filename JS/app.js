@@ -322,6 +322,36 @@ document.addEventListener("keydown", e => {
     }
 });
 
+// Recherche en temps réel
+if (searchInput) {
+    searchInput.addEventListener("input", () => {
+        currentSearch = searchInput.value;
+        resetPagination();
+        refreshUI();
+    });
+}
+
+// Filtre par formation
+if (filterFormation) {
+    filterFormation.addEventListener("change", () => {
+        currentFilter = filterFormation.value;
+        resetPagination();
+        refreshUI();
+    });
+}
+
+// Réinitialiser les filtres
+if (btnReinitialiser) {
+    btnReinitialiser.addEventListener("click", () => {
+        if (searchInput) searchInput.value = "";
+        if (filterFormation) filterFormation.value = "";
+        currentSearch = "";
+        currentFilter = "";
+        resetPagination();
+        refreshUI();
+    });
+}
+
 // ========== INITIALISATION ==========
 initErrorListeners();
 initPhoneFormatting();
