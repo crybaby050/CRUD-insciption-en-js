@@ -139,7 +139,7 @@ function updateRestaurerButton() {
     }
     
     if (btnRestaurerTout) {
-        btnRestaurerTout.disabled = count < 1;
+        btnRestaurerTout.disabled = count < 3;
         btnRestaurerTout.style.opacity = count < 1 ? "0.5" : "1";
         btnRestaurerTout.style.cursor = count < 1 ? "not-allowed" : "pointer";
     }
