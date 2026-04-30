@@ -114,6 +114,14 @@ function ouvrirModalConfirmation(id, nom, prenom) {
     confirmModal.classList.add("active");
 }
 
+//Fermer le modal de confirmation de suppression d'un etudiant
+function fermerModalConfirmation() {
+    if (confirmModal) {
+        confirmModal.classList.remove("active");
+        idEtudiantADesactiver = null;
+    }
+}
+
 function handleSubmit(event) {
     event.preventDefault();
 
