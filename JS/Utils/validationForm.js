@@ -26,7 +26,7 @@ const PHONE_CONFIG = {
 };
 
 
-export function validateForm(data, countryCode = "+221") {
+export function validateForm(data, countryCode = "+221", excludeId = null) {
     const errors = {};
 
     // Validation du prénom
@@ -44,6 +44,8 @@ export function validateForm(data, countryCode = "+221") {
         errors.email = "L'email est requis.";
     } else if (!EMAIL_REGEX.test(data.email.trim())) {
         errors.email = "Format invalide. Ex: nom@domaine.com";
+    } else if (emailExiste(data.email.trim(), excludeId)) {
+        errors.email = "Cet email est déjà utilisé par un autre étudiant.";
     }
 
     // Validation du téléphone selon le pays
@@ -53,6 +55,8 @@ export function validateForm(data, countryCode = "+221") {
         const phoneError = validatePhoneByCountry(data.telephone.trim(), countryCode);
         if (phoneError) {
             errors.telephone = phoneError;
+        } else if (telephoneExiste(data.telephone.trim(), excludeId)) {
+            errors.telephone = "Ce numéro de téléphone est déjà utilisé.";
         }
     }
 
