@@ -7,6 +7,8 @@ import { validateForm } from "./Utils/validationForm.js";
 import { drawerOverlay, drawer, btnFermerDrawer, btnRestaurerTout } from "./DOM/element.js";
 import { showErrors, clearErrors, initErrorListeners, initPhoneFormatting } from "./UI/errorRenderer.js";
 import { renderDrawer, restaurerTousSelectionnes } from "./UI/drawerRenderer.js";
+import { restoreModal, btnRestoreAnnuler, btnRestoreOk } from "./DOM/element.js";
+import { executerRestoration, fermerModalRestoration, getIdEtudiantARestaurer } from "./UI/drawerRenderer.js";
 import { getEtudiantsDesactives } from "./Store/studentStore.js";
 import { btnRestaurer } from "./DOM/element.js";
 import {
@@ -271,6 +273,27 @@ document.addEventListener("keydown", e => {
         if (drawer?.classList.contains("translate-x-0")) fermerDrawer();
         else if (confirmModal?.classList.contains("active")) fermerModalConfirmation();
         else if (addModal?.classList.contains("active")) fermerModal();
+    }
+});
+
+btnRestoreAnnuler?.addEventListener("click", fermerModalRestoration);
+btnRestoreOk?.addEventListener("click", () => {
+    executerRestoration();
+    toastSuccess("Succès", "Étudiant restauré !");
+});
+
+// Fermer le modal de restauration en cliquant sur l'overlay
+restoreModal?.addEventListener("click", e => {
+    if (e.target === restoreModal) fermerModalRestoration();
+});
+
+// Mettre à jour la gestion de la touche Escape
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        if (restoreModal?.classList.contains("active")) fermerModalRestoration();
+        else if (confirmModal?.classList.contains("active")) fermerModalConfirmation();
+        else if (addModal?.classList.contains("active")) fermerModal();
+        else if (drawer?.classList.contains("translate-x-0")) fermerDrawer();
     }
 });
 
