@@ -11,6 +11,8 @@ import { restoreModal, btnRestoreAnnuler, btnRestoreOk } from "./DOM/element.js"
 import { executerRestoration, fermerModalRestoration, getIdEtudiantARestaurer } from "./UI/drawerRenderer.js";
 import { getEtudiantsDesactives } from "./Store/studentStore.js";
 import { btnRestaurer } from "./DOM/element.js";
+import { renderPagination, getCurrentPageSlice, resetPagination } from "./UI/paginationRenderer.js";
+import { pagina } from "./DOM/element.js";
 import {
     addModal, addForm, modalTitre,
     inpNom, inpPrenom, inpEmail, inpTelephone,
