@@ -173,23 +173,36 @@ function gererDesactivation(id) {
 
 function refreshUI() {
     const etudiants = getEtudiants();
+    const paginatedEtudiants = getCurrentPageSlice(etudiants);
+    
     const handlers = {
         onModifier: ouvrirModalModification,
         onDesactiver: gererDesactivation,
     };
     
     if (vueActive === "tableau") {
-        renderEtudiantList(etudiants, handlers);
+        renderEtudiantList(paginatedEtudiants, handlers);
         viewTableau.style.display = "block";
         viewCartes.style.display = "none";
         btnVueTableau?.classList.add("active");
         btnVueCartes?.classList.remove("active");
     } else {
-        renderEtudiantCarteList(etudiants, handlers);
+        renderEtudiantCarteList(paginatedEtudiants, handlers);
         viewTableau.style.display = "none";
         viewCartes.style.display = "block";
         btnVueTableau?.classList.remove("active");
         btnVueCartes?.classList.add("active");
+    }
+    
+    // Afficher la pagination
+    if (pagina) {
+        renderPagination(pagina, etudiants, (slice) => {
+            if (vueActive === "tableau") {
+                renderEtudiantList(slice, handlers);
+            } else {
+                renderEtudiantCarteList(slice, handlers);
+            }
+        });
     }
 }
 
