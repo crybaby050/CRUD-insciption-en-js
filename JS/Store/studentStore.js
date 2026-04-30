@@ -89,8 +89,8 @@ export function restaurerEtudiant(id) {
 
 
 export function emailExiste(email, excludeId = null) {
-    return etudiants.some(e => 
-        e.email.toLowerCase() === email.toLowerCase() && 
+    return etudiants.some(e =>
+        e.email.toLowerCase() === email.toLowerCase() &&
         e.id !== excludeId
     );
 }
@@ -98,9 +98,11 @@ export function emailExiste(email, excludeId = null) {
 export function telephoneExiste(telephone, excludeId = null) {
     // Nettoyer le téléphone pour la comparaison (garder que les chiffres)
     const cleanPhone = telephone.replace(/\D/g, "");
-    
+
     return etudiants.some(e => {
         const existingPhone = (e.telephone || "").replace(/\D/g, "");
-        return existingPhone === cleanPhone && e.id !== excludeId;
+        // Vérifie si le numéro se termine par les mêmes chiffres
+        return (existingPhone === cleanPhone || existingPhone.endsWith(cleanPhone)) &&
+            e.id !== excludeId;
     });
 }
