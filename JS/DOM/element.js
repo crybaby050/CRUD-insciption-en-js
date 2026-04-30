@@ -33,3 +33,13 @@ export const confirmTitre = document.getElementById("confirm-titre");
 export const confirmMessage = document.getElementById("confirm-message");
 export const btnConfirmAnnuler = document.getElementById("btn-confirm-annuler");
 export const btnConfirmOk = document.getElementById("btn-confirm-ok");
+
+
+export const drawerOverlay = document.getElementById("drawer-overlay");
+export const drawer = document.getElementById("drawer");
+export const drawerList = document.getElementById("drawer-list");
+export const drawerCount = document.getElementById("drawer-count");
+export const btnFermerDrawer = document.getElementById("btn-fermer-drawer");
+export const btnRestaurerTout = document.getElementById("btn-restaurer-tout");
+export const btnViderCorbeille = document.getElementById("btn-vider-corbeille");
+export const countSelected = document.getElementById("count-selected");
