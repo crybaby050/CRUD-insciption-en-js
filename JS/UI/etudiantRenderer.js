@@ -76,7 +76,7 @@ export function renderEtudiantCarte(etudiant, { onModifier, onDesactiver }) {
         </div>
         <div class="flex gap-2 pt-2">
             <button class="btn-modifier flex-1 py-2 rounded-lg bg-green text-white text-sm">Modifier</button>
-            <button class="btn-desactiver flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-sm">Désactiver</button>
+            <button class="btn-desactiver flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-sm">Supprimer</button>
         </div>
     `;
 
